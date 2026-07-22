@@ -22,17 +22,17 @@ func NewRouter() *gin.Engine {
 	r.GET("/actuator/health", handler.Health)
 	r.GET("/internal/probe", handler.Probe)
 
-	// 支付宝占位路径（与 Boot AlipayChannelClient / AlipayPayController 一致）
+	// 支付宝 OpenAPI 实装（与 Boot AlipayChannelClient 路径一致）
 	alipay := r.Group("/channel/alipay")
 	{
-		alipay.POST("/pay", handler.AlipayStub)
-		alipay.POST("/sync", handler.AlipayStub)
-		alipay.POST("/close", handler.AlipayStub)
-		alipay.POST("/refund", handler.AlipayStub)
-		alipay.POST("/refund-sync", handler.AlipayStub)
-		alipay.POST("/callback/parse-pay", handler.AlipayStub)
-		alipay.POST("/callback/parse-refund", handler.AlipayStub)
-		alipay.POST("/auth/app-token", handler.AlipayStub)
+		alipay.POST("/pay", handler.AlipayPay)
+		alipay.POST("/sync", handler.AlipaySync)
+		alipay.POST("/close", handler.AlipayClose)
+		alipay.POST("/refund", handler.AlipayRefund)
+		alipay.POST("/refund-sync", handler.AlipayRefundSync)
+		alipay.POST("/callback/parse-pay", handler.AlipayCallbackParsePay)
+		alipay.POST("/callback/parse-refund", handler.AlipayCallbackParseRefund)
+		alipay.POST("/auth/app-token", handler.AlipayAppAuthToken)
 	}
 
 	return r
