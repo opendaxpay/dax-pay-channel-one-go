@@ -2,14 +2,14 @@
 
 与 Java Boot 版 [`dax-pay-channel-one`](../dax-pay-channel-one/) 并列的 **Gin** 实现，端口同为 **20100**，**勿与 Boot / Quarkus 同时启动**。
 
-首期已打通契约骨架与 **支付宝 OpenAPI 八接口实装**（自研 RSA2 + `gateway.do`，支持公钥/证书模式）。微信等其它通道未实现。
+已打通契约骨架，并自研实装 **支付宝 / 微信（直连+ISV）/ 银联商务(UMS) / 抖音** 四通道（无第三方支付 SDK）。
 
 ## 技术栈
 
 - Go 1.26+
 - Gin
 - OpenTelemetry（进程内 Tracer + W3C `traceparent`，默认不导出 OTLP）
-- 支付宝：自研 OpenAPI（无第三方 alipay SDK）
+- 通道协议：自研 HTTP + 签名（支付宝 RSA2、微信 V3、UMS OPEN-BODY-SIG、抖音 DouyinPay-RSA）
 
 ## 运行
 
@@ -38,7 +38,7 @@ Health: http://127.0.0.1:20100/actuator/health
 | i18n | `Accept-Language` → embed JSON，key 如 `channel.error.*` |
 | 追踪 | 入站 `traceparent`；响应头 `x-trace-id`；日志带 `traceId`/`spanId` |
 | JSON | camelCase；`int64` 序列化为字符串；时间 UTC ISO |
-| 支付宝 | 路径/字段与主应用 `AlipayChannelClient` 镜像；OpenAPI 行为对齐 Boot 服务 |
+| 通道 | 路径/字段与主应用 `*ChannelClient` 镜像；行为对齐 Boot 子应用 |
 
 ## 路由
 
@@ -46,14 +46,11 @@ Health: http://127.0.0.1:20100/actuator/health
 |--------|------|------|
 | GET | `/actuator/health` | 健康检查 |
 | GET | `/internal/probe` | 契约探测（locale + trace） |
-| POST | `/channel/alipay/pay` | 下单（WAP/APP/PC/QR/BARCODE/JSAPI） |
-| POST | `/channel/alipay/sync` | 查单 |
-| POST | `/channel/alipay/close` | 关单/撤销 |
-| POST | `/channel/alipay/refund` | 退款 |
-| POST | `/channel/alipay/refund-sync` | 退款查询 |
-| POST | `/channel/alipay/callback/parse-pay` | 支付回调验签解析 |
-| POST | `/channel/alipay/callback/parse-refund` | 退款回调验签解析 |
-| POST | `/channel/alipay/auth/app-token` | 换 app_auth_token |
+| POST | `/channel/alipay/{pay,sync,close,refund,refund-sync,callback/parse-*,auth/app-token}` | 支付宝 |
+| POST | `/channel/wechat/{pay,sync,close,refund,refund-sync,callback/parse-*}` | 微信直连 |
+| POST | `/channel/wechat/isv/{pay,sync,close,refund,refund-sync}` | 微信服务商 |
+| POST | `/channel/ums/{pay,sync,close,refund,refund-sync,callback/parse-*}` | 银联商务 |
+| POST | `/channel/douyin/{pay,sync,close,refund,refund-sync,callback/parse-*}` | 抖音 |
 
 ## 验证示例
 
@@ -68,7 +65,7 @@ curl -s -D - -H "Accept-Language: en-US" \
 单元测试：
 
 ```bash
-go test ./internal/alipay/...
+go test ./internal/alipay/... ./internal/wechat/... ./internal/ums/... ./internal/douyin/...
 ```
 
 ## 目录
@@ -77,7 +74,10 @@ go test ./internal/alipay/...
 cmd/server/          入口
 configs/             配置
 internal/
-  alipay/            OpenAPI 客户端 + dto + service
+  alipay/            支付宝 OpenAPI + dto + service
+  wechat/            微信 V3（直连/ISV）+ dto + service
+  ums/               银联商务 sdk + dto + service
+  douyin/            抖音 OpenAPI + dto + service
   result/errcode/... 统一契约
   handler/server/    HTTP
 resources/i18n/      十语 error.json 源文件（embed 副本在 internal/i18n/i18n）

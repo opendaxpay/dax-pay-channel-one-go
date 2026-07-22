@@ -22,7 +22,7 @@ func NewRouter() *gin.Engine {
 	r.GET("/actuator/health", handler.Health)
 	r.GET("/internal/probe", handler.Probe)
 
-	// 支付宝 OpenAPI 实装（与 Boot AlipayChannelClient 路径一致）
+	// 支付宝（与 Boot AlipayChannelClient 路径一致）
 	alipay := r.Group("/channel/alipay")
 	{
 		alipay.POST("/pay", handler.AlipayPay)
@@ -33,6 +33,52 @@ func NewRouter() *gin.Engine {
 		alipay.POST("/callback/parse-pay", handler.AlipayCallbackParsePay)
 		alipay.POST("/callback/parse-refund", handler.AlipayCallbackParseRefund)
 		alipay.POST("/auth/app-token", handler.AlipayAppAuthToken)
+	}
+
+	// 微信直连
+	wechat := r.Group("/channel/wechat")
+	{
+		wechat.POST("/pay", handler.WechatPay)
+		wechat.POST("/sync", handler.WechatSync)
+		wechat.POST("/close", handler.WechatClose)
+		wechat.POST("/refund", handler.WechatRefund)
+		wechat.POST("/refund-sync", handler.WechatRefundSync)
+		wechat.POST("/callback/parse-pay", handler.WechatCallbackParsePay)
+		wechat.POST("/callback/parse-refund", handler.WechatCallbackParseRefund)
+	}
+
+	// 微信服务商（ISV，无 callback）
+	wechatIsv := r.Group("/channel/wechat/isv")
+	{
+		wechatIsv.POST("/pay", handler.WechatIsvPay)
+		wechatIsv.POST("/sync", handler.WechatIsvSync)
+		wechatIsv.POST("/close", handler.WechatIsvClose)
+		wechatIsv.POST("/refund", handler.WechatIsvRefund)
+		wechatIsv.POST("/refund-sync", handler.WechatIsvRefundSync)
+	}
+
+	// 银联商务 UMS
+	ums := r.Group("/channel/ums")
+	{
+		ums.POST("/pay", handler.UmsPay)
+		ums.POST("/sync", handler.UmsSync)
+		ums.POST("/close", handler.UmsClose)
+		ums.POST("/refund", handler.UmsRefund)
+		ums.POST("/refund-sync", handler.UmsRefundSync)
+		ums.POST("/callback/parse-pay", handler.UmsCallbackParsePay)
+		ums.POST("/callback/parse-refund", handler.UmsCallbackParseRefund)
+	}
+
+	// 抖音
+	douyin := r.Group("/channel/douyin")
+	{
+		douyin.POST("/pay", handler.DouyinPay)
+		douyin.POST("/sync", handler.DouyinSync)
+		douyin.POST("/close", handler.DouyinClose)
+		douyin.POST("/refund", handler.DouyinRefund)
+		douyin.POST("/refund-sync", handler.DouyinRefundSync)
+		douyin.POST("/callback/parse-pay", handler.DouyinCallbackParsePay)
+		douyin.POST("/callback/parse-refund", handler.DouyinCallbackParseRefund)
 	}
 
 	return r
