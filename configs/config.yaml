@@ -1,0 +1,9 @@
+# dax-pay-channel-one-go 配置（对标 Boot application.yml）
+server:
+  port: 20100
+
+tracing:
+  # 全采样，便于本地排障（对标 management.tracing.sampling.probability: 1.0）
+  sample_ratio: 1.0
+  # 默认不导出 OTLP（对标 otlp.enabled: false），仅进程内 span + 日志关联
+  otlp_enabled: false
