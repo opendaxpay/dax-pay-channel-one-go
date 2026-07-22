@@ -1,22 +1,28 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	"daxpay.open/dax-pay-channel-one-go/internal/alipay"
 	"daxpay.open/dax-pay-channel-one-go/internal/alipay/dto"
 	"daxpay.open/dax-pay-channel-one-go/internal/alipay/service"
+	"daxpay.open/dax-pay-channel-one-go/internal/channelerr"
 	"daxpay.open/dax-pay-channel-one-go/internal/errcode"
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
 	"daxpay.open/dax-pay-channel-one-go/internal/result"
 )
 
-func writeBizErr(c *gin.Context, err error) {
+// 支付宝入口；本文件另含四通道共用的 writeErr / writeOK。
+
+// writeErr：四通道统一错误写出（HTTP 始终 200 + DaxResult）。
+// *channelerr.BizError → 用其 Code + LocalizedMsg；其它 error 兜底 10003 + detail。
+func writeErr(c *gin.Context, err error) {
 	ctx := c.Request.Context()
-	if be, ok := err.(*alipay.BizError); ok {
-		c.JSON(http.StatusOK, result.Fail(be.Code, alipay.LocalizedMsg(ctx, be)))
+	var be *channelerr.BizError
+	if errors.As(err, &be) {
+		c.JSON(http.StatusOK, result.Fail(be.Code, channelerr.LocalizedMsg(ctx, be)))
 		return
 	}
 	c.JSON(http.StatusOK, result.Fail(
@@ -25,6 +31,7 @@ func writeBizErr(c *gin.Context, err error) {
 	))
 }
 
+// writeOK：成功信封（HTTP 200 + DaxResult.code=0）
 func writeOK(c *gin.Context, data any) {
 	ctx := c.Request.Context()
 	c.JSON(http.StatusOK, result.Ok(errcode.Success.Message(ctx), data))
@@ -38,7 +45,7 @@ func AlipayPay(c *gin.Context) {
 	}
 	data, err := service.Pay(c.Request.Context(), &req)
 	if err != nil {
-		writeBizErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -52,7 +59,7 @@ func AlipaySync(c *gin.Context) {
 	}
 	data, err := service.Sync(c.Request.Context(), &req)
 	if err != nil {
-		writeBizErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -66,7 +73,7 @@ func AlipayClose(c *gin.Context) {
 	}
 	data, err := service.Close(c.Request.Context(), &req)
 	if err != nil {
-		writeBizErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -80,7 +87,7 @@ func AlipayRefund(c *gin.Context) {
 	}
 	data, err := service.Refund(c.Request.Context(), &req)
 	if err != nil {
-		writeBizErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -94,7 +101,7 @@ func AlipayRefundSync(c *gin.Context) {
 	}
 	data, err := service.RefundSync(c.Request.Context(), &req)
 	if err != nil {
-		writeBizErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -126,7 +133,7 @@ func AlipayAppAuthToken(c *gin.Context) {
 	}
 	data, err := service.ExchangeAppAuthToken(c.Request.Context(), &req)
 	if err != nil {
-		writeBizErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)

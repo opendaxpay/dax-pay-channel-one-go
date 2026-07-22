@@ -1,29 +1,14 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"daxpay.open/dax-pay-channel-one-go/internal/douyin"
 	"daxpay.open/dax-pay-channel-one-go/internal/douyin/dto"
 	"daxpay.open/dax-pay-channel-one-go/internal/douyin/service"
-	"daxpay.open/dax-pay-channel-one-go/internal/errcode"
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
-	"daxpay.open/dax-pay-channel-one-go/internal/result"
 )
 
-func writeDouyinErr(c *gin.Context, err error) {
-	ctx := c.Request.Context()
-	if be, ok := err.(*douyin.BizError); ok {
-		c.JSON(http.StatusOK, result.Fail(be.Code, douyin.LocalizedMsg(ctx, be)))
-		return
-	}
-	c.JSON(http.StatusOK, result.Fail(
-		errcode.SDKCallFailed.Code,
-		errcode.SDKCallFailed.MessageWithDetail(ctx, err.Error()),
-	))
-}
+// 抖音入口；业务错误统一经 writeErr 写出（见 alipay.go）。
 
 // DouyinPay：POST /channel/douyin/pay
 func DouyinPay(c *gin.Context) {
@@ -33,35 +18,7 @@ func DouyinPay(c *gin.Context) {
 	}
 	data, err := service.Pay(c.Request.Context(), &req)
 	if err != nil {
-		writeDouyinErr(c, err)
-		return
-	}
-	writeOK(c, data)
-}
-
-// DouyinClose：POST /channel/douyin/close
-func DouyinClose(c *gin.Context) {
-	var req dto.CloseReq
-	if !middleware.BindJSON(c, &req) {
-		return
-	}
-	data, err := service.Close(c.Request.Context(), &req)
-	if err != nil {
-		writeDouyinErr(c, err)
-		return
-	}
-	writeOK(c, data)
-}
-
-// DouyinRefund：POST /channel/douyin/refund
-func DouyinRefund(c *gin.Context) {
-	var req dto.RefundReq
-	if !middleware.BindJSON(c, &req) {
-		return
-	}
-	data, err := service.Refund(c.Request.Context(), &req)
-	if err != nil {
-		writeDouyinErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -75,7 +32,35 @@ func DouyinSync(c *gin.Context) {
 	}
 	data, err := service.Sync(c.Request.Context(), &req)
 	if err != nil {
-		writeDouyinErr(c, err)
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// DouyinClose：POST /channel/douyin/close
+func DouyinClose(c *gin.Context) {
+	var req dto.CloseReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Close(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// DouyinRefund：POST /channel/douyin/refund
+func DouyinRefund(c *gin.Context) {
+	var req dto.RefundReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Refund(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -89,7 +74,7 @@ func DouyinRefundSync(c *gin.Context) {
 	}
 	data, err := service.RefundSync(c.Request.Context(), &req)
 	if err != nil {
-		writeDouyinErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)

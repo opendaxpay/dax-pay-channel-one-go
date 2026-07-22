@@ -76,8 +76,9 @@ configs/             配置
 internal/
   alipay/            支付宝 OpenAPI + dto + service
   wechat/            微信 V3（直连/ISV）+ dto + service
-  ums/               银联商务 sdk + dto + service
+  ums/               银联商务 openapi + dto + service
   douyin/            抖音 OpenAPI + dto + service
+  channelerr/        统一 BizError
   result/errcode/... 统一契约
   handler/server/    HTTP
 resources/i18n/      十语 error.json 源文件（embed 副本在 internal/i18n/i18n）

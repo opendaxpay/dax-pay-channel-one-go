@@ -1,4 +1,4 @@
-package sdk_test
+package openapi_test
 
 import (
 	"crypto/hmac"
@@ -9,13 +9,13 @@ import (
 	"strings"
 	"testing"
 
-	"daxpay.open/dax-pay-channel-one-go/internal/ums/sdk"
+	"daxpay.open/dax-pay-channel-one-go/internal/ums/openapi"
 )
 
 func TestSignatureDeterministic(t *testing.T) {
 	appID, appKey := "app", "key"
 	ts, nonce, body := "20260101120000", "abc", `{"a":1}`
-	got := sdk.Signature(appID, appKey, ts, nonce, body)
+	got := openapi.Signature(appID, appKey, ts, nonce, body)
 
 	sum := sha256.Sum256([]byte(body))
 	content := appID + ts + nonce + hex.EncodeToString(sum[:])
@@ -28,7 +28,7 @@ func TestSignatureDeterministic(t *testing.T) {
 }
 
 func TestBuildH5URL(t *testing.T) {
-	u := sdk.BuildH5URL("https://example.com/pay", "app", "ts", "nonce", `{"x":1}`, "sig+")
+	u := openapi.BuildH5URL("https://example.com/pay", "app", "ts", "nonce", `{"x":1}`, "sig+")
 	if !strings.Contains(u, "authorization=OPEN-FORM-PARAM") {
 		t.Fatal(u)
 	}
@@ -47,11 +47,11 @@ func TestVerifyCallbackMD5(t *testing.T) {
 	data := "amount=100&billNo=B1&signType=MD5"
 	sum := md5.Sum([]byte(data + secret))
 	params["sign"] = hex.EncodeToString(sum[:])
-	if !sdk.VerifyCallback(params, secret) {
+	if !openapi.VerifyCallback(params, secret) {
 		t.Fatal("md5 verify failed")
 	}
 	params["sign"] = "bad"
-	if sdk.VerifyCallback(params, secret) {
+	if openapi.VerifyCallback(params, secret) {
 		t.Fatal("expected fail")
 	}
 }
@@ -65,7 +65,7 @@ func TestVerifyCallbackSHA256(t *testing.T) {
 	data := "merOrderId=O1&signType=SHA256"
 	sum := sha256.Sum256([]byte(data + secret))
 	params["sign"] = hex.EncodeToString(sum[:])
-	if !sdk.VerifyCallback(params, secret) {
+	if !openapi.VerifyCallback(params, secret) {
 		t.Fatal("sha256 verify failed")
 	}
 }

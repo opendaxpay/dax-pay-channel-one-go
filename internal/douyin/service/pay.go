@@ -85,7 +85,7 @@ func payJSAPI(ctx context.Context, client *openapi.Client, req *dto.PayReq, resp
 	if out.PrepayID == "" {
 		return douyin.NewSDKError("channel.error.douyinPayFailed", "未返回prepay_id")
 	}
-	payBody, err := douyin.BuildJSAPIPayBody(req.Credential.DouyinAppID, out.PrepayID, req.Credential.MerchantPrivateKey)
+	payBody, err := openapi.BuildJSAPIPayBody(req.Credential.DouyinAppID, out.PrepayID, req.Credential.MerchantPrivateKey)
 	if err != nil {
 		return douyin.NewSDKError("channel.error.douyinPayFailed", err.Error())
 	}

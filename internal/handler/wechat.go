@@ -1,29 +1,14 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"daxpay.open/dax-pay-channel-one-go/internal/errcode"
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
-	"daxpay.open/dax-pay-channel-one-go/internal/result"
-	"daxpay.open/dax-pay-channel-one-go/internal/wechat"
 	"daxpay.open/dax-pay-channel-one-go/internal/wechat/dto"
 	"daxpay.open/dax-pay-channel-one-go/internal/wechat/service"
 )
 
-func writeWechatErr(c *gin.Context, err error) {
-	ctx := c.Request.Context()
-	if be, ok := err.(*wechat.BizError); ok {
-		c.JSON(http.StatusOK, result.Fail(be.Code, wechat.LocalizedMsg(ctx, be)))
-		return
-	}
-	c.JSON(http.StatusOK, result.Fail(
-		errcode.SDKCallFailed.Code,
-		errcode.SDKCallFailed.MessageWithDetail(ctx, err.Error()),
-	))
-}
+// 微信直连 / ISV 入口；业务错误统一经 writeErr 写出（见 alipay.go）。
 
 // WechatPay：POST /channel/wechat/pay
 func WechatPay(c *gin.Context) {
@@ -33,7 +18,7 @@ func WechatPay(c *gin.Context) {
 	}
 	data, err := service.DirectPay(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -47,7 +32,7 @@ func WechatSync(c *gin.Context) {
 	}
 	data, err := service.DirectSync(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -61,7 +46,7 @@ func WechatClose(c *gin.Context) {
 	}
 	data, err := service.DirectClose(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -75,7 +60,7 @@ func WechatRefund(c *gin.Context) {
 	}
 	data, err := service.DirectRefund(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -89,7 +74,7 @@ func WechatRefundSync(c *gin.Context) {
 	}
 	data, err := service.DirectRefundSync(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -121,7 +106,7 @@ func WechatIsvPay(c *gin.Context) {
 	}
 	data, err := service.IsvPay(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -135,7 +120,7 @@ func WechatIsvSync(c *gin.Context) {
 	}
 	data, err := service.IsvSync(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -149,7 +134,7 @@ func WechatIsvClose(c *gin.Context) {
 	}
 	data, err := service.IsvClose(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -163,7 +148,7 @@ func WechatIsvRefund(c *gin.Context) {
 	}
 	data, err := service.IsvRefund(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -177,7 +162,7 @@ func WechatIsvRefundSync(c *gin.Context) {
 	}
 	data, err := service.IsvRefundSync(c.Request.Context(), &req)
 	if err != nil {
-		writeWechatErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)

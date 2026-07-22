@@ -5,7 +5,7 @@ import (
 
 	"daxpay.open/dax-pay-channel-one-go/internal/ums"
 	"daxpay.open/dax-pay-channel-one-go/internal/ums/dto"
-	"daxpay.open/dax-pay-channel-one-go/internal/ums/sdk"
+	"daxpay.open/dax-pay-channel-one-go/internal/ums/openapi"
 )
 
 // Pay：银联商务下单
@@ -35,11 +35,11 @@ func Pay(ctx context.Context, req *dto.PayReq) (*dto.PayResp, error) {
 	}
 }
 
-func qrPay(client *sdk.Client, req *dto.PayReq) (*dto.PayResp, error) {
+func qrPay(client *openapi.Client, req *dto.PayReq) (*dto.PayResp, error) {
 	param := baseParam(req.Credential)
 	param["instMid"] = dto.InstMidQR
 	param["billNo"] = req.OutTradeNo
-	param["billDate"] = sdk.TodayDate()
+	param["billDate"] = openapi.TodayDate()
 	param["totalAmount"] = int64(req.Amount)
 	param["notifyUrl"] = req.NotifyURL
 	if req.LimitCreditCard != nil && *req.LimitCreditCard {
@@ -75,7 +75,7 @@ func buildH5Base(req *dto.PayReq) map[string]any {
 	return param
 }
 
-func h5Pay(client *sdk.Client, req *dto.PayReq, call func(map[string]any) (string, error)) (*dto.PayResp, error) {
+func h5Pay(client *openapi.Client, req *dto.PayReq, call func(map[string]any) (string, error)) (*dto.PayResp, error) {
 	url, err := call(buildH5Base(req))
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func h5Pay(client *sdk.Client, req *dto.PayReq, call func(map[string]any) (strin
 	}, nil
 }
 
-func wechatH5Pay(client *sdk.Client, req *dto.PayReq) (*dto.PayResp, error) {
+func wechatH5Pay(client *openapi.Client, req *dto.PayReq) (*dto.PayResp, error) {
 	param := buildH5Base(req)
 	param["sceneType"] = "AND_WAP"
 	param["merAppName"] = req.Description
@@ -98,7 +98,7 @@ func wechatH5Pay(client *sdk.Client, req *dto.PayReq) (*dto.PayResp, error) {
 	})
 }
 
-func wechatCashierPay(client *sdk.Client, req *dto.PayReq) (*dto.PayResp, error) {
+func wechatCashierPay(client *openapi.Client, req *dto.PayReq) (*dto.PayResp, error) {
 	if req.WxAppID == "" {
 		return nil, ums.NewSDKError("channel.error.umsRequestFailed", "微信收银台支付必填 wxAppId")
 	}

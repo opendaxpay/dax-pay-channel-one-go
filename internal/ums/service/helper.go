@@ -8,19 +8,19 @@ import (
 	"daxpay.open/dax-pay-channel-one-go/internal/jsonx"
 	"daxpay.open/dax-pay-channel-one-go/internal/ums"
 	"daxpay.open/dax-pay-channel-one-go/internal/ums/dto"
-	"daxpay.open/dax-pay-channel-one-go/internal/ums/sdk"
+	"daxpay.open/dax-pay-channel-one-go/internal/ums/openapi"
 )
 
-func newClient(cred *ums.SdkCredential) (*sdk.Client, error) {
+func newClient(cred *ums.SdkCredential) (*openapi.Client, error) {
 	if cred == nil {
 		return nil, ums.NewSDKError("channel.error.umsRequestFailed", "credential is required")
 	}
-	return sdk.NewClient(cred), nil
+	return openapi.NewClient(cred), nil
 }
 
 func baseParam(cred *ums.SdkCredential) map[string]any {
 	return map[string]any{
-		"requestTimestamp": sdk.NowDateTime(),
+		"requestTimestamp": openapi.NowDateTime(),
 		"mid":              cred.MerchantNo,
 		"tid":              cred.TerminalNo,
 	}
@@ -72,7 +72,7 @@ func formatBillDate(t *jsonx.OffsetDateTime) string {
 		return ""
 	}
 	tt := time.Time(*t)
-	return sdk.FormatCstDate(&tt)
+	return openapi.FormatCstDate(&tt)
 }
 
 func isQR(method dto.PayMethod) bool {

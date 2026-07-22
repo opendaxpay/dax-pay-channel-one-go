@@ -1,4 +1,7 @@
-package sdk
+// Package openapi：银联商务开放平台协议层（原 sdk 包已更名为 openapi，与其它通道命名对齐）。
+//
+// 职责：HTTP 客户端、OPEN-BODY-SIG / OPEN-FORM-PARAM 签名、东八区时间、异步回调验签。
+package openapi
 
 import (
 	"bytes"
@@ -14,8 +17,10 @@ import (
 )
 
 const (
-	SandboxAPIURL     = "https://test-api-open.chinaums.com"
-	ProductionAPIURL  = "https://api-mop.chinaums.com"
+	// SandboxAPIURL：银联商务沙箱网关
+	SandboxAPIURL = "https://test-api-open.chinaums.com"
+	// ProductionAPIURL：银联商务生产网关
+	ProductionAPIURL = "https://api-mop.chinaums.com"
 )
 
 // Client：银联商务 HTTP 客户端（对标 Boot UmsClient）
@@ -25,7 +30,7 @@ type Client struct {
 	http       *http.Client
 }
 
-// NewClient：根据凭证构建客户端
+// NewClient：根据凭证构建客户端（sandbox 字段切换网关）
 func NewClient(credential *ums.SdkCredential) *Client {
 	base := ProductionAPIURL
 	if credential != nil && credential.Sandbox {
@@ -38,54 +43,67 @@ func NewClient(credential *ums.SdkCredential) *Client {
 	}
 }
 
+// QrPay：B 扫 C / 静态码获取二维码
 func (c *Client) QrPay(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/bills/get-qrcode")
 }
 
+// QueryQrOrder：二维码订单查询
 func (c *Client) QueryQrOrder(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/bills/query")
 }
 
+// RefundQr：二维码退款
 func (c *Client) RefundQr(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/bills/refund")
 }
 
+// CloseQr：关闭二维码
 func (c *Client) CloseQr(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/bills/close-qrcode")
 }
 
+// AlipayH5：支付宝 H5 跳转 URL（OPEN-FORM-PARAM）
 func (c *Client) AlipayH5(param map[string]any) (string, error) {
 	return c.buildH5URL(param, c.apiURL+"/v1/netpay/trade/h5-pay")
 }
 
+// WechatH5ToMini：微信 H5 转小程序跳转 URL
 func (c *Client) WechatH5ToMini(param map[string]any) (string, error) {
 	return c.buildH5URL(param, c.apiURL+"/v1/netpay/wxpay/h5-to-minipay")
 }
 
+// WechatH5：微信 H5 跳转 URL
 func (c *Client) WechatH5(param map[string]any) (string, error) {
 	return c.buildH5URL(param, c.apiURL+"/v1/netpay/wxpay/h5-pay")
 }
 
+// UnionH5：云闪付 H5 下单跳转 URL
 func (c *Client) UnionH5(param map[string]any) (string, error) {
 	return c.buildH5URL(param, c.apiURL+"/v1/netpay/uac/order")
 }
 
+// QueryH5Order：H5/线上订单查询
 func (c *Client) QueryH5Order(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/query")
 }
 
+// QueryH5Refund：H5/线上退款查询
 func (c *Client) QueryH5Refund(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/refund-query")
 }
 
+// RefundH5：H5/线上退款
 func (c *Client) RefundH5(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/refund")
 }
 
+// CloseH5：H5/线上关单
 func (c *Client) CloseH5(param map[string]any) (map[string]any, error) {
 	return c.tradePost(param, c.apiURL+"/v1/netpay/close")
 }
 
+// tradePost：JSON POST + OPEN-BODY-SIG；errCode!=SUCCESS 时包装为 BizError
 func (c *Client) tradePost(param map[string]any, rawURL string) (map[string]any, error) {
 	bodyBytes, err := json.Marshal(param)
 	if err != nil {
@@ -125,6 +143,7 @@ func (c *Client) tradePost(param map[string]any, rawURL string) (map[string]any,
 	return result, nil
 }
 
+// buildH5URL：组装带 OPEN-FORM-PARAM 签名的浏览器跳转链接
 func (c *Client) buildH5URL(param map[string]any, rawURL string) (string, error) {
 	timestamp := H5Timestamp()
 	nonce := randomDigits(32)
@@ -149,7 +168,7 @@ func strVal(m map[string]any, key string) string {
 	case string:
 		return t
 	case float64:
-		// JSON 数字
+		// JSON 数字（Unmarshal 默认 float64）
 		if t == float64(int64(t)) {
 			return fmt.Sprintf("%d", int64(t))
 		}

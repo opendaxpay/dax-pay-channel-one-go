@@ -1,29 +1,14 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"daxpay.open/dax-pay-channel-one-go/internal/errcode"
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
-	"daxpay.open/dax-pay-channel-one-go/internal/result"
-	"daxpay.open/dax-pay-channel-one-go/internal/ums"
 	"daxpay.open/dax-pay-channel-one-go/internal/ums/dto"
 	"daxpay.open/dax-pay-channel-one-go/internal/ums/service"
 )
 
-func writeUmsErr(c *gin.Context, err error) {
-	ctx := c.Request.Context()
-	if be, ok := err.(*ums.BizError); ok {
-		c.JSON(http.StatusOK, result.Fail(be.Code, ums.LocalizedMsg(ctx, be)))
-		return
-	}
-	c.JSON(http.StatusOK, result.Fail(
-		errcode.SDKCallFailed.Code,
-		errcode.SDKCallFailed.MessageWithDetail(ctx, err.Error()),
-	))
-}
+// 银联商务入口；业务错误统一经 writeErr 写出（见 alipay.go）。
 
 // UmsPay：POST /channel/ums/pay
 func UmsPay(c *gin.Context) {
@@ -33,7 +18,7 @@ func UmsPay(c *gin.Context) {
 	}
 	data, err := service.Pay(c.Request.Context(), &req)
 	if err != nil {
-		writeUmsErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -47,7 +32,7 @@ func UmsSync(c *gin.Context) {
 	}
 	data, err := service.Sync(c.Request.Context(), &req)
 	if err != nil {
-		writeUmsErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -61,7 +46,7 @@ func UmsClose(c *gin.Context) {
 	}
 	data, err := service.Close(c.Request.Context(), &req)
 	if err != nil {
-		writeUmsErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -75,7 +60,7 @@ func UmsRefund(c *gin.Context) {
 	}
 	data, err := service.Refund(c.Request.Context(), &req)
 	if err != nil {
-		writeUmsErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)
@@ -89,7 +74,7 @@ func UmsRefundSync(c *gin.Context) {
 	}
 	data, err := service.RefundSync(c.Request.Context(), &req)
 	if err != nil {
-		writeUmsErr(c, err)
+		writeErr(c, err)
 		return
 	}
 	writeOK(c, data)

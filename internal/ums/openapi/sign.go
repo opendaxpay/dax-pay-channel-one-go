@@ -1,4 +1,4 @@
-package sdk
+package openapi
 
 import (
 	"crypto/hmac"
@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-// OpenBodySig：生成 OPEN-BODY-SIG Authorization 头
+// OpenBodySig：生成 OPEN-BODY-SIG Authorization 头（API JSON 请求用）
 func OpenBodySig(appID, appKey, body string) string {
 	timestamp := H5Timestamp()
 	nonce := newUUIDHex()
@@ -29,6 +29,7 @@ func Signature(appID, appKey, timestamp, nonce, body string) string {
 	return signature(appID, appKey, timestamp, nonce, body)
 }
 
+// signature：HMAC-SHA256(appId+timestamp+nonce+SHA256(body)) → Base64
 func signature(appID, appKey, timestamp, nonce, body string) string {
 	sum := sha256.Sum256([]byte(body))
 	bodyDigest := hex.EncodeToString(sum[:])
@@ -38,7 +39,7 @@ func signature(appID, appKey, timestamp, nonce, body string) string {
 	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
 }
 
-// BuildH5URL：拼 OPEN-FORM-PARAM 跳转链接
+// BuildH5URL：拼 OPEN-FORM-PARAM 跳转链接（content/signature 做 URL 编码）
 func BuildH5URL(baseURL, appID, timestamp, nonce, reqBody, sig string) string {
 	return fmt.Sprintf(
 		"%s?authorization=OPEN-FORM-PARAM&appId=%s&timestamp=%s&nonce=%s&content=%s&signature=%s",
@@ -48,7 +49,7 @@ func BuildH5URL(baseURL, appID, timestamp, nonce, reqBody, sig string) string {
 	)
 }
 
-// VerifyCallback：异步回调验签
+// VerifyCallback：异步回调验签（排除 sign 空字段；MD5 或默认 SHA256）
 func VerifyCallback(params map[string]string, secretKey string) bool {
 	if params == nil {
 		return false
@@ -70,6 +71,7 @@ func VerifyCallback(params map[string]string, secretKey string) bool {
 	return strings.EqualFold(sign, calculated)
 }
 
+// buildSignString：key 字典序拼接 k=v&...（跳过 sign 与空值）
 func buildSignString(params map[string]string) string {
 	keys := make([]string, 0, len(params))
 	for k, v := range params {

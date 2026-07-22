@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"daxpay.open/dax-pay-channel-one-go/internal/douyin"
 	"daxpay.open/dax-pay-channel-one-go/internal/douyin/openapi"
 )
 
@@ -78,7 +77,7 @@ func TestJSAPISigner(t *testing.T) {
 	if err := openapi.VerifyRSA(&priv.PublicKey, msg, sig); err != nil {
 		t.Fatal(err)
 	}
-	body, err := douyin.BuildJSAPIPayBody(appID, prepayID, pemKey)
+	body, err := openapi.BuildJSAPIPayBody(appID, prepayID, pemKey)
 	if err != nil {
 		t.Fatal(err)
 	}

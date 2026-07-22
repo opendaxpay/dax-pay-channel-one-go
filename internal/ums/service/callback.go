@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"daxpay.open/dax-pay-channel-one-go/internal/ums/dto"
-	"daxpay.open/dax-pay-channel-one-go/internal/ums/sdk"
+	"daxpay.open/dax-pay-channel-one-go/internal/ums/openapi"
 )
 
 // ParsePayCallback：支付回调验签解析
 func ParsePayCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.CallbackParseResp {
 	_ = ctx
 	resp := &dto.CallbackParseResp{}
-	if req.Credential == nil || !sdk.VerifyCallback(req.Params, req.Credential.SecretKey) {
+	if req.Credential == nil || !openapi.VerifyCallback(req.Params, req.Credential.SecretKey) {
 		resp.Verified = false
 		return resp
 	}
@@ -30,7 +30,7 @@ func ParsePayCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.Callb
 func ParseRefundCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.CallbackParseResp {
 	_ = ctx
 	resp := &dto.CallbackParseResp{}
-	if req.Credential == nil || !sdk.VerifyCallback(req.Params, req.Credential.SecretKey) {
+	if req.Credential == nil || !openapi.VerifyCallback(req.Params, req.Credential.SecretKey) {
 		resp.Verified = false
 		return resp
 	}
