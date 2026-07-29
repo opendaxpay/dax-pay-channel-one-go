@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "チャネル通信暗号化キーは {0} 文字である必要があります",
+    "encryptFailed": "チャネル通信暗号化に失敗しました",
+    "ciphertextInvalid": "チャネル通信暗号文の長さが不正です",
+    "decryptFailed": "チャネル通信復号に失敗しました",
+    "requestHeaderMissing": "チャネル通信暗号化：リクエストに暗号化ヘッダーがありません"
+  },
   "success": "成功",
   "channelNotFound": "サポートされていないチャンネルコードです",
   "channelNotFoundWithDetail": "サポートされていないチャネル コード: {0}",

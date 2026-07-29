@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"daxpay.open/dax-pay-channel-one-go/internal/httpclient"
 	"daxpay.open/dax-pay-channel-one-go/internal/wechat"
 )
 
@@ -59,7 +60,7 @@ func NewClient(cred *wechat.SdkCredential) (*Client, error) {
 	c := &Client{
 		cred:       cred,
 		privateKey: priv,
-		httpClient: &http.Client{Timeout: 30 * time.Second},
+		httpClient: httpclient.Default(),
 		baseURL:    DefaultBaseURL,
 		certs:      NewCertStore(),
 	}

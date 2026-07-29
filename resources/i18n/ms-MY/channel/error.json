@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "Kunci penyulitan pengangkutan saluran mesti {0} aksara",
+    "encryptFailed": "Penyulitan pengangkutan saluran gagal",
+    "ciphertextInvalid": "Panjang ciphertext pengangkutan saluran tidak sah",
+    "decryptFailed": "Penyahsulitan pengangkutan saluran gagal",
+    "requestHeaderMissing": "Penyulitan pengangkutan saluran: permintaan tiada pengepala penyulitan"
+  },
   "success": "kejayaan",
   "channelNotFound": "Kod saluran tidak disokong",
   "channelNotFoundWithDetail": "Kod saluran tidak disokong: {0}",

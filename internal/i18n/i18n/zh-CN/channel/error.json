@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "通道传输加密密钥长度须为 {0} 个字符",
+    "encryptFailed": "通道传输加密失败",
+    "ciphertextInvalid": "通道传输密文长度非法",
+    "decryptFailed": "通道传输解密失败",
+    "requestHeaderMissing": "通道传输加密：请求未携带加密头"
+  },
   "success": "success",
   "channelNotFound": "不支持的通道编码",
   "channelNotFoundWithDetail": "不支持的通道编码: {0}",

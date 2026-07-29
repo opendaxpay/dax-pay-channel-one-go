@@ -72,8 +72,8 @@ func Load(fsys fs.FS, root string) (*MessageSource, error) {
 		if err != nil {
 			return fmt.Errorf("read %s: %w", p, err)
 		}
-		var flat map[string]string
-		if err := json.Unmarshal(data, &flat); err != nil {
+		var nested map[string]any
+		if err := json.Unmarshal(data, &nested); err != nil {
 			return fmt.Errorf("parse %s: %w", p, err)
 		}
 		bucket := ms.messages[locale]
@@ -81,7 +81,7 @@ func Load(fsys fs.FS, root string) (*MessageSource, error) {
 			bucket = make(map[string]string)
 			ms.messages[locale] = bucket
 		}
-		for k, v := range flat {
+		for k, v := range flattenMessages(nested, "") {
 			bucket[prefix+"."+k] = v
 		}
 		return nil
@@ -104,6 +104,34 @@ func pathRel(root, p string) (string, error) {
 		return "", nil
 	}
 	return strings.TrimPrefix(p, root+"/"), nil
+}
+
+// flattenMessages：递归扁平化嵌套 JSON 对象为点分 key→string 映射
+//
+// 支持 Java 端 channel/error.json 里的嵌套结构，例如：
+//
+//	{"transportEncrypt": {"keyInvalid": "..."}}  →  {"transportEncrypt.keyInvalid": "..."}
+//
+// 字符串值原样保留；数字/布尔等非容器值用 fmt.Sprint 兜底；JSON 数组当前不出现于 i18n 文件，遇则按元素下标展开。
+func flattenMessages(m map[string]any, prefix string) map[string]string {
+	out := make(map[string]string)
+	for k, v := range m {
+		key := k
+		if prefix != "" {
+			key = prefix + "." + k
+		}
+		switch val := v.(type) {
+		case string:
+			out[key] = val
+		case map[string]any:
+			for kk, vv := range flattenMessages(val, key) {
+				out[kk] = vv
+			}
+		default:
+			out[key] = fmt.Sprint(val)
+		}
+	}
+	return out
 }
 
 // 按 locale 取消息；缺 key 回退 zh-CN；仍缺则返回 key 本身

@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "Kunci enkripsi transportasi kanal harus {0} karakter",
+    "encryptFailed": "Enkripsi transportasi kanal gagal",
+    "ciphertextInvalid": "Panjang ciphertext transportasi kanal tidak valid",
+    "decryptFailed": "Dekripsi transportasi kanal gagal",
+    "requestHeaderMissing": "Enkripsi transportasi kanal: permintaan tanpa header enkripsi"
+  },
   "success": "kesuksesan",
   "channelNotFound": "Kode saluran tidak didukung",
   "channelNotFoundWithDetail": "Kode saluran tidak didukung: {0}",

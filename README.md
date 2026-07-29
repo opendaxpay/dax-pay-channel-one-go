@@ -29,15 +29,25 @@ go run ./cmd/server
 
 Health: http://127.0.0.1:20100/actuator/health
 
+### 传输加密密钥
+
+`/channel/**` 路由强制 AES-256-GCM 双向加密，密钥须与主应用 `daxpay.channel.one.transport-encrypt.key` 完全一致（恰好 32 字节 UTF-8 字符）。两种配置方式：
+
+- 配置文件 `configs/config.yaml` 的 `channel.transport-encrypt.key`（开发默认）
+- 环境变量 `CHANNEL_TRANSPORT_KEY`（**优先于配置文件**，生产部署用此方式，勿提交真实密钥）
+
+密钥为空或长度非 32 时启动失败。详见 `internal/transport/`、`internal/middleware/transport_encrypt.go`。
+
 ## 契约对齐（对标 Boot）
 
 | 项 | 行为 |
 |----|------|
 | 响应 | HTTP **始终 200**，body `{code,msg,data}`，`code==0` 成功 |
 | 错误码 | 0 / 10001–10008（`ChannelErrorCode`） |
-| i18n | `Accept-Language` → embed JSON，key 如 `channel.error.*` |
+| i18n | `Accept-Language` → embed JSON，key 如 `channel.error.*`（支持嵌套对象） |
 | 追踪 | 入站 `traceparent`；响应头 `x-trace-id`；日志带 `traceId`/`spanId` |
 | JSON | camelCase；`int64` 序列化为字符串；时间 UTC ISO |
+| 传输加密 | `/channel/**` **AES-256-GCM 双向强制**；密文 `Base64(IV‖ct‖tag)`；头 `X-Dax-Payload-Encrypted`；`actuator/internal` 明文 |
 | 通道 | 路径/字段与主应用 `*ChannelClient` 镜像；行为对齐 Boot 子应用 |
 
 ## 路由
@@ -79,7 +89,14 @@ internal/
   ums/               银联商务 openapi + dto + service
   douyin/            抖音 OpenAPI + dto + service
   channelerr/        统一 BizError
+  httpclient/        共享 *http.Client（连接池复用）
+  transport/         通道传输 AES-256-GCM 加解密器
   result/errcode/... 统一契约
   handler/server/    HTTP
+  middleware/        Recovery/Otel/Locale/TransportEncrypt
 resources/i18n/      十语 error.json 源文件（embed 副本在 internal/i18n/i18n）
 ```
+
+## License
+
+本项目基于 [GNU LGPL v3.0 或更高版本](./LICENSE) 协议开源，同时受[《用户授权使用协议》](./USER-AGREEMENT.txt)约束。在使用前请阅读上述协议，如果不同意请勿进行使用。

@@ -8,7 +8,7 @@ import (
 	"daxpay.open/dax-pay-channel-one-go/internal/ums/openapi"
 )
 
-// Pay：银联商务下单
+// Pay 银联商务下单
 func Pay(ctx context.Context, req *dto.PayReq) (*dto.PayResp, error) {
 	_ = ctx
 	if req.Method == "" {
@@ -23,13 +23,13 @@ func Pay(ctx context.Context, req *dto.PayReq) (*dto.PayResp, error) {
 	case dto.PayMethodQRCode:
 		return qrPay(client, req)
 	case dto.PayMethodAlipayH5:
-		return h5Pay(client, req, func(p map[string]any) (string, error) { return client.AlipayH5(p) })
+		return h5Pay(req, func(p map[string]any) (string, error) { return client.AlipayH5(p) })
 	case dto.PayMethodWechatH5:
 		return wechatH5Pay(client, req)
 	case dto.PayMethodWechatCashier:
 		return wechatCashierPay(client, req)
 	case dto.PayMethodUnionJSAPI:
-		return h5Pay(client, req, func(p map[string]any) (string, error) { return client.UnionH5(p) })
+		return h5Pay(req, func(p map[string]any) (string, error) { return client.UnionH5(p) })
 	default:
 		return nil, ums.NewSDKError("channel.error.umsRequestFailed", "unsupported method: "+string(req.Method))
 	}
@@ -75,7 +75,7 @@ func buildH5Base(req *dto.PayReq) map[string]any {
 	return param
 }
 
-func h5Pay(client *openapi.Client, req *dto.PayReq, call func(map[string]any) (string, error)) (*dto.PayResp, error) {
+func h5Pay(req *dto.PayReq, call func(map[string]any) (string, error)) (*dto.PayResp, error) {
 	url, err := call(buildH5Base(req))
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func wechatH5Pay(client *openapi.Client, req *dto.PayReq) (*dto.PayResp, error) 
 	param["sceneType"] = "AND_WAP"
 	param["merAppName"] = req.Description
 	param["merAppId"] = req.ClientIP
-	return h5Pay(client, req, func(p map[string]any) (string, error) {
+	return h5Pay(req, func(p map[string]any) (string, error) {
 		_ = p
 		return client.WechatH5(param)
 	})
@@ -104,7 +104,7 @@ func wechatCashierPay(client *openapi.Client, req *dto.PayReq) (*dto.PayResp, er
 	}
 	param := buildH5Base(req)
 	param["subAppId"] = req.WxAppID
-	return h5Pay(client, req, func(p map[string]any) (string, error) {
+	return h5Pay(req, func(p map[string]any) (string, error) {
 		_ = p
 		return client.WechatH5ToMini(param)
 	})

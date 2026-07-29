@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"daxpay.open/dax-pay-channel-one-go/internal/alipay"
+	"daxpay.open/dax-pay-channel-one-go/internal/httpclient"
 )
 
 // Client：自研支付宝 OpenAPI 客户端
@@ -48,7 +48,7 @@ func NewClient(cred *alipay.SdkCredential) (*Client, error) {
 		cred:       cred,
 		privateKey: priv,
 		publicKey:  pub,
-		httpClient: &http.Client{Timeout: 30 * time.Second},
+		httpClient: httpclient.Default(),
 		gateway:    GatewayURL(cred),
 	}, nil
 }

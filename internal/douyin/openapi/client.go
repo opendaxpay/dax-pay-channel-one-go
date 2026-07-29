@@ -8,7 +8,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
+
+	"daxpay.open/dax-pay-channel-one-go/internal/httpclient"
 )
 
 const (
@@ -45,7 +46,7 @@ func NewClient(cfg Config) (*Client, error) {
 	return &Client{
 		cfg:        cfg,
 		privateKey: pk,
-		httpClient: &http.Client{Timeout: 30 * time.Second},
+		httpClient: httpclient.Default(),
 		baseURL:    BaseURL,
 		certs:      NewCertStore(),
 	}, nil

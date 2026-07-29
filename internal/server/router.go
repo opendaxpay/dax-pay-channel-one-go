@@ -5,19 +5,22 @@ import (
 
 	"daxpay.open/dax-pay-channel-one-go/internal/handler"
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
+	"daxpay.open/dax-pay-channel-one-go/internal/transport"
 )
 
 const ServiceName = "daxpay-channel-one-go"
 
 // NewRouter：注册中间件与路由
 //
-// 中间件顺序：Recovery → Otel → TraceIDHeader → Locale
-func NewRouter() *gin.Engine {
+// 中间件顺序：Recovery → Otel → TraceIDHeader → Locale → TransportEncrypt
+// TransportEncrypt 置于 Locale 之后（locale/trace 先就绪，解密失败可用本地化文案）。
+func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 	r := gin.New()
 	r.Use(middleware.Recovery())
 	r.Use(middleware.Otel(ServiceName))
 	r.Use(middleware.TraceIDHeader())
 	r.Use(middleware.Locale())
+	r.Use(middleware.TransportEncrypt(encryptor))
 
 	r.GET("/actuator/health", handler.Health)
 	r.GET("/internal/probe", handler.Probe)

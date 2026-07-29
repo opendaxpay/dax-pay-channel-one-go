@@ -5,14 +5,14 @@ package openapi
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/rand"
 	"net/http"
 	"strings"
-	"time"
 
+	"daxpay.open/dax-pay-channel-one-go/internal/httpclient"
 	"daxpay.open/dax-pay-channel-one-go/internal/ums"
 )
 
@@ -39,7 +39,7 @@ func NewClient(credential *ums.SdkCredential) *Client {
 	return &Client{
 		credential: credential,
 		apiURL:     strings.TrimRight(base, "/"),
-		http:       &http.Client{Timeout: 30 * time.Second},
+		http:       httpclient.Default(),
 	}
 }
 
@@ -183,9 +183,10 @@ func strVal(m map[string]any, key string) string {
 func randomDigits(n int) string {
 	const digits = "0123456789"
 	b := make([]byte, n)
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	var buf [1]byte
 	for i := range b {
-		b[i] = digits[r.Intn(10)]
+		_, _ = rand.Read(buf[:])
+		b[i] = digits[int(buf[0])%len(digits)]
 	}
 	return string(b)
 }

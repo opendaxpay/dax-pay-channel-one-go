@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "채널 전송 암호화 키는 {0}자여야 합니다",
+    "encryptFailed": "채널 전송 암호화에 실패했습니다",
+    "ciphertextInvalid": "채널 전송 암호문 길이가 잘못되었습니다",
+    "decryptFailed": "채널 전송 복호화에 실패했습니다",
+    "requestHeaderMissing": "채널 전송 암호화: 요청에 암호화 헤더가 없습니다"
+  },
   "success": "성공",
   "channelNotFound": "지원되지 않는 채널 코드",
   "channelNotFoundWithDetail": "지원되지 않는 채널 코드: {0}",

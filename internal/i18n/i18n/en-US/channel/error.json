@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "Channel transport encrypt key must be {0} characters",
+    "encryptFailed": "Channel transport encrypt failed",
+    "ciphertextInvalid": "Channel transport ciphertext length is invalid",
+    "decryptFailed": "Channel transport decrypt failed",
+    "requestHeaderMissing": "Channel transport encrypt: request missing encrypt header"
+  },
   "success": "success",
   "channelNotFound": "Unsupported channel code",
   "channelNotFoundWithDetail": "Unsupported channel code: {0}",

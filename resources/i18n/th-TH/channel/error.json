@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "คีย์เข้ารหัสการส่งผ่านช่องทางต้องมี {0} ตัวอักษร",
+    "encryptFailed": "การเข้ารหัสการส่งผ่านช่องทางล้มเหลว",
+    "ciphertextInvalid": "ความยาว ciphertext การส่งผ่านช่องทางไม่ถูกต้อง",
+    "decryptFailed": "การถอดรหัสการส่งผ่านช่องทางล้มเหลว",
+    "requestHeaderMissing": "การเข้ารหัสการส่งผ่านช่องทาง: คำขอไม่มีส่วนหัวการเข้ารหัส"
+  },
   "success": "ความสำเร็จ",
   "channelNotFound": "รหัสช่องที่ไม่รองรับ",
   "channelNotFoundWithDetail": "รหัสช่องที่ไม่รองรับ: {0}",

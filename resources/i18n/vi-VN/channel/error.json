@@ -1,4 +1,11 @@
 {
+  "transportEncrypt": {
+    "keyInvalid": "Khóa mã hóa truyền dẫn kênh phải có {0} ký tự",
+    "encryptFailed": "Mã hóa truyền dẫn kênh thất bại",
+    "ciphertextInvalid": "Độ dài ciphertext truyền dẫn kênh không hợp lệ",
+    "decryptFailed": "Giải mã truyền dẫn kênh thất bại",
+    "requestHeaderMissing": "Mã hóa truyền dẫn kênh: yêu cầu thiếu header mã hóa"
+  },
   "success": "thành công",
   "channelNotFound": "Mã kênh không được hỗ trợ",
   "channelNotFoundWithDetail": "Mã kênh không được hỗ trợ: {0}",

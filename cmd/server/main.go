@@ -15,6 +15,7 @@ import (
 	"daxpay.open/dax-pay-channel-one-go/internal/i18n"
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
 	"daxpay.open/dax-pay-channel-one-go/internal/server"
+	"daxpay.open/dax-pay-channel-one-go/internal/transport"
 )
 
 func main() {
@@ -38,6 +39,13 @@ func main() {
 	}
 	i18n.SetGlobal(ms)
 
+	// 初始化通道传输加密（AES-256-GCM，强制常开，对标 Java ChannelAesGcmEncryptor）
+	encryptor, err := transport.NewEncryptor(cfg.Channel.TransportEncrypt.Key)
+	if err != nil {
+		slog.Error("init transport encryptor failed", "err", err)
+		os.Exit(1)
+	}
+
 	ctx := context.Background()
 	shutdownTracer, err := middleware.InitTracer(ctx, server.ServiceName, cfg.Tracing.SampleRatio)
 	if err != nil {
@@ -48,12 +56,15 @@ func main() {
 		_ = shutdownTracer(context.Background())
 	}()
 
-	engine := server.NewRouter()
+	engine := server.NewRouter(encryptor)
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	httpServer := &http.Server{
 		Addr:              addr,
 		Handler:           engine,
 		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       120 * time.Second,
 	}
 
 	go func() {
