@@ -36,3 +36,16 @@ func (c *SdkCredential) Valid() bool {
 		strings.TrimSpace(c.PrivateKey) != "" &&
 		strings.TrimSpace(c.CertSerialNo) != ""
 }
+
+// ValidForCallback：回调验签专用必填校验（不要求 wxAppId）
+//
+// 回调验签+解密仅需 apiKeyV3 与证书(平台证书模式还需 mchId 做证书下载鉴权), 不依赖 wxAppId。
+func (c *SdkCredential) ValidForCallback() bool {
+	if c == nil {
+		return false
+	}
+	return strings.TrimSpace(c.WxMchId) != "" &&
+		strings.TrimSpace(c.ApiKeyV3) != "" &&
+		strings.TrimSpace(c.PrivateKey) != "" &&
+		strings.TrimSpace(c.CertSerialNo) != ""
+}

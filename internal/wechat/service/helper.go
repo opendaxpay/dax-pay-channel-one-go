@@ -30,6 +30,20 @@ func newClient(cred *wechat.SdkCredential) (*openapi.Client, error) {
 	return c, nil
 }
 
+// newCallbackClient：回调专用客户端构建（不要求 appId）
+//
+// 回调验签+解密不依赖 wxAppId，故放宽校验。供 [ParsePayCallback] / [ParseRefundCallback] 使用。
+func newCallbackClient(cred *wechat.SdkCredential) (*openapi.Client, error) {
+	if cred == nil || !cred.ValidForCallback() {
+		return nil, wechat.NewConfigError("channel.error.wechatInvalidConfig")
+	}
+	c, err := openapi.NewCallbackClient(cred)
+	if err != nil {
+		return nil, wechat.NewConfigError("channel.error.wechatInvalidConfig")
+	}
+	return c, nil
+}
+
 // formatExpire：微信要求 yyyy-MM-dd'T'HH:mm:ss+08:00（无小数秒）
 func formatExpire(t jsonx.OffsetDateTime) string {
 	cst := t.Time().In(time.FixedZone("CST", 8*3600))

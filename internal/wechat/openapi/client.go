@@ -53,6 +53,21 @@ func NewClient(cred *wechat.SdkCredential) (*Client, error) {
 	if cred == nil || !cred.Valid() {
 		return nil, fmt.Errorf("invalid wechat credential")
 	}
+	return newClientCore(cred)
+}
+
+// NewCallbackClient：回调专用构建（不要求 appId）
+//
+// 回调验签+解密不依赖 wxAppId，故放宽为 ValidForCallback 校验。
+func NewCallbackClient(cred *wechat.SdkCredential) (*Client, error) {
+	if cred == nil || !cred.ValidForCallback() {
+		return nil, fmt.Errorf("invalid wechat credential")
+	}
+	return newClientCore(cred)
+}
+
+// newClientCore：凭证已校验后的客户端构造
+func newClientCore(cred *wechat.SdkCredential) (*Client, error) {
 	priv, err := ParsePrivateKey(cred.PrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("parse private key: %w", err)

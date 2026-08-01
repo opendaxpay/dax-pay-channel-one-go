@@ -21,7 +21,7 @@ type notifyEnvelope struct {
 // ParsePayCallback：支付回调验签 + AEAD 解密
 func ParsePayCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.CallbackParseResp {
 	fail := &dto.CallbackParseResp{Verified: false}
-	client, err := newClient(req.Credential)
+	client, err := newCallbackClient(req.Credential)
 	if err != nil {
 		middleware.LoggerWithTrace(ctx).Error("wechat pay callback: bad credential", "err", err)
 		return fail
@@ -91,7 +91,7 @@ func ParsePayCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.Callb
 // ParseRefundCallback：退款回调验签 + AEAD 解密
 func ParseRefundCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.CallbackParseResp {
 	fail := &dto.CallbackParseResp{Verified: false}
-	client, err := newClient(req.Credential)
+	client, err := newCallbackClient(req.Credential)
 	if err != nil {
 		middleware.LoggerWithTrace(ctx).Error("wechat refund callback: bad credential", "err", err)
 		return fail
