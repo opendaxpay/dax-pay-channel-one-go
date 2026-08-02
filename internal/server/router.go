@@ -12,14 +12,11 @@ const ServiceName = "daxpay-channel-one-go"
 
 // NewRouter：注册中间件与路由
 //
-// 中间件顺序：Recovery → NormalizeTraceparent → Otel → TraceIDHeader → Locale → TransportEncrypt
-// NormalizeTraceparent 必须在 Otel 之前：归一化主应用 OTel Java 注入的非标准 flags(03)，否则 otelgin 提取失败断链。
+// 中间件顺序：Recovery → Otel → TraceIDHeader → Locale → TransportEncrypt
 // TransportEncrypt 置于 Locale 之后（locale/trace 先就绪，解密失败可用本地化文案）。
 func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 	r := gin.New()
 	r.Use(middleware.Recovery())
-	// 归一化 traceparent flags，兼容主应用 OTel Java 注入的非标准 flags(03)，否则 OTel Go 拒绝解析导致断链
-	r.Use(middleware.NormalizeTraceparent())
 	r.Use(middleware.Otel(ServiceName))
 	r.Use(middleware.TraceIDHeader())
 	r.Use(middleware.Locale())
@@ -73,6 +70,18 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		ums.POST("/refund-sync", handler.UmsRefundSync)
 		ums.POST("/callback/parse-pay", handler.UmsCallbackParsePay)
 		ums.POST("/callback/parse-refund", handler.UmsCallbackParseRefund)
+	}
+
+	// 云闪付(直连银联 ACP)
+	union := r.Group("/channel/union")
+	{
+		union.POST("/pay", handler.UnionPay)
+		union.POST("/sync", handler.UnionSync)
+		union.POST("/close", handler.UnionClose)
+		union.POST("/refund", handler.UnionRefund)
+		union.POST("/refund-sync", handler.UnionRefundSync)
+		union.POST("/callback/parse-pay", handler.UnionCallbackParsePay)
+		union.POST("/callback/parse-refund", handler.UnionCallbackParseRefund)
 	}
 
 	// 抖音
