@@ -4,7 +4,10 @@
     "encryptFailed": "Channel transport encrypt failed",
     "ciphertextInvalid": "Channel transport ciphertext length is invalid",
     "decryptFailed": "Channel transport decrypt failed",
-    "requestHeaderMissing": "Channel transport encrypt: request missing encrypt header"
+    "requestHeaderMissing": "Channel transport encrypt: request missing encrypt header",
+    "appConfigMissing": "Channel app config is missing: {0}",
+    "configMissing": "Channel transport encrypt config is missing: {0}",
+    "responseHeaderMissing": "Channel response missing transport encrypt header {0}"
   },
   "success": "success",
   "channelNotFound": "Unsupported channel code",
@@ -50,5 +53,8 @@
   "douyinPayFailed": "{0}",
   "douyinCloseFailed": "{0}",
   "douyinPayMethodNull": "Douyin payment method must not be null",
-  "douyinJsapiNoOpenId": "openid is required for Douyin JSAPI payment"
+  "douyinJsapiNoOpenId": "openid is required for Douyin JSAPI payment",
+  "resultUnknown": "Channel result unknown, confirming final status",
+  "wechatPayResultUnknown": "WeChat payment result unknown (order may be paid / auth code already used), confirming final status: {0}",
+  "alipayPayResultUnknown": "Alipay payment result unknown (order may be paid / auth code already used), confirming final status: {0}"
 }

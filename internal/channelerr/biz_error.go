@@ -48,6 +48,14 @@ func NewConfigError(messageKey string) *BizError {
 	return &BizError{Code: errcode.InvalidConfig.Code, MessageKey: messageKey}
 }
 
+// NewResultUnknown：结果未知（code=10009）
+//
+// 付款码用户支付中/订单已支付/付款码已被使用等场景，实际可能已成功，结果未知，
+// 由主应用保持处理中并查单确认最终状态，避免误判 FAIL 导致资金悬挂。
+func NewResultUnknown(messageKey, detail string) *BizError {
+	return &BizError{Code: errcode.ResultUnknown.Code, MessageKey: messageKey, Detail: detail}
+}
+
 // LocalizedMsg：按 Accept-Language 渲染本地化消息。
 //
 // 有 Detail 时优先 i18n.T(key, detail)（支持 {0}）；若 key 无占位/未命中翻译，

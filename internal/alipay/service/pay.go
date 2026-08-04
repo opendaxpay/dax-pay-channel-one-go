@@ -12,9 +12,10 @@ import (
 )
 
 const (
-	codeSuccess   = "10000"
-	codeInProcess = "10003"
-	buyerIDPrefix = "2088"
+	codeSuccess        = "10000"
+	codeInProcess      = "10003"
+	buyerIDPrefix      = "2088"
+	subCodeTradeExists = "ACQ.TRADE_HAS_SUCCESS"
 )
 
 // gatewayBiz：网关业务响应公共字段
@@ -34,6 +35,17 @@ func (g gatewayBiz) errDetail() string {
 		return g.SubMsg
 	}
 	return g.Msg
+}
+
+// verifyFailure：支付宝响应失败时，区分「结果未知」与普通失败
+//
+// 交易已存在/付款码已被使用(ACQ.TRADE_HAS_SUCCESS)：实际可能是之前请求已成功，结果未知，
+// 抛 RESULT_UNKNOWN 由主应用保持处理中并查单确认，避免误判 FAIL 资金悬挂。
+func verifyFailure(g gatewayBiz) error {
+	if g.SubCode == subCodeTradeExists {
+		return alipay.NewResultUnknown("channel.error.alipayPayResultUnknown", g.errDetail())
+	}
+	return alipay.NewSDKError("channel.error.alipayPayCallFailed", g.errDetail())
 }
 
 func newClient(cred *alipay.SdkCredential) (*openapi.Client, error) {
@@ -156,7 +168,7 @@ func payQr(ctx context.Context, req *dto.PayReq, amount, expire string, resp *dt
 		return err
 	}
 	if !out.success() {
-		return alipay.NewSDKError("channel.error.alipayPayCallFailed", out.errDetail())
+		return verifyFailure(out.gatewayBiz)
 	}
 	resp.PayBody = out.QRCode
 	resp.PayBodyType = dto.BodyQRCode
@@ -198,7 +210,7 @@ func payBarcode(ctx context.Context, req *dto.PayReq, amount, expire string, res
 		resp.BuyerOpenID = out.BuyerOpenID
 	}
 	if out.Code != codeInProcess && !out.success() {
-		return alipay.NewSDKError("channel.error.alipayPayCallFailed", out.errDetail())
+		return verifyFailure(out.gatewayBiz)
 	}
 	return nil
 }
@@ -227,7 +239,7 @@ func payJsapi(ctx context.Context, req *dto.PayReq, amount, expire string, resp 
 		return err
 	}
 	if !out.success() {
-		return alipay.NewSDKError("channel.error.alipayPayCallFailed", out.errDetail())
+		return verifyFailure(out.gatewayBiz)
 	}
 	resp.TradeNo = out.TradeNo
 	resp.PayBody = out.TradeNo

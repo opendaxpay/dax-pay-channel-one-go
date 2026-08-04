@@ -235,7 +235,7 @@ func payCodepay(ctx context.Context, client *openapi.Client, req *dto.PayReq, re
 	if err != nil {
 		if isCodepayPaying(err) {
 			// 微信: 付款码用户支付中, 需主应用轮询同步
-			return wechat.NewSDKError("channel.error.wechatCodepayUserPaying", err.Error())
+			return wechat.NewResultUnknown("channel.error.wechatCodepayUserPaying", err.Error())
 		}
 		return wrapAPIErr("channel.error.wechatPayCallFailed", err)
 	}

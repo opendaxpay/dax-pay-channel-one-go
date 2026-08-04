@@ -4,7 +4,10 @@
     "encryptFailed": "チャネル通信暗号化に失敗しました",
     "ciphertextInvalid": "チャネル通信暗号文の長さが不正です",
     "decryptFailed": "チャネル通信復号に失敗しました",
-    "requestHeaderMissing": "チャネル通信暗号化：リクエストに暗号化ヘッダーがありません"
+    "requestHeaderMissing": "チャネル通信暗号化：リクエストに暗号化ヘッダーがありません",
+    "appConfigMissing": "チャネルサブアプリ設定が空です: {0}",
+    "configMissing": "チャネル転送暗号化設定がありません: {0}",
+    "responseHeaderMissing": "チャネル応答に転送暗号化ヘッダー {0} がありません"
   },
   "success": "成功",
   "channelNotFound": "サポートされていないチャンネルコードです",
@@ -50,5 +53,8 @@
   "douyinPayFailed": "{0}",
   "douyinCloseFailed": "{0}",
   "douyinPayMethodNull": "Douyin 支払い方法は null であってはなりません",
-  "douyinJsapiNoOpenId": "Douyin JSAPI 支払いには openid が必要です"
+  "douyinJsapiNoOpenId": "Douyin JSAPI 支払いには openid が必要です",
+  "resultUnknown": "チャネル処理結果が不明です。最終状態を確認中です",
+  "wechatPayResultUnknown": "微信支付結果が不明です（注文が支払済み/支払コードが使用済みの可能性）。最終状態を確認中です: {0}",
+  "alipayPayResultUnknown": "支付宝支付結果が不明です（注文が支払済み/支払コードが使用済みの可能性）。最終状態を確認中です: {0}"
 }

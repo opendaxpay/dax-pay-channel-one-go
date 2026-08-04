@@ -4,7 +4,10 @@
     "encryptFailed": "Enkripsi transportasi kanal gagal",
     "ciphertextInvalid": "Panjang ciphertext transportasi kanal tidak valid",
     "decryptFailed": "Dekripsi transportasi kanal gagal",
-    "requestHeaderMissing": "Enkripsi transportasi kanal: permintaan tanpa header enkripsi"
+    "requestHeaderMissing": "Enkripsi transportasi kanal: permintaan tanpa header enkripsi",
+    "appConfigMissing": "Konfigurasi aplikasi saluran kosong: {0}",
+    "configMissing": "Konfigurasi enkripsi transport saluran hilang: {0}",
+    "responseHeaderMissing": "Respons saluran tidak memiliki header enkripsi transport {0}"
   },
   "success": "kesuksesan",
   "channelNotFound": "Kode saluran tidak didukung",
@@ -50,5 +53,8 @@
   "douyinPayFailed": "{0}",
   "douyinCloseFailed": "{0}",
   "douyinPayMethodNull": "Metode pembayaran Douyin tidak boleh nol",
-  "douyinJsapiNoOpenId": "openid diperlukan untuk pembayaran Douyin JSAPI"
+  "douyinJsapiNoOpenId": "openid diperlukan untuk pembayaran Douyin JSAPI",
+  "resultUnknown": "Hasil pemrosesan kanal tidak diketahui, sedang mengonfirmasi status akhir",
+  "wechatPayResultUnknown": "Hasil pembayaran WeChat tidak diketahui (pesanan mungkin sudah dibayar/kode otorisasi sudah digunakan), sedang mengonfirmasi status akhir: {0}",
+  "alipayPayResultUnknown": "Hasil pembayaran Alipay tidak diketahui (pesanan mungkin sudah dibayar/kode otorisasi sudah digunakan), sedang mengonfirmasi status akhir: {0}"
 }

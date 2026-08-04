@@ -8,6 +8,7 @@ import "daxpay.open/dax-pay-channel-one-go/internal/channelerr"
 type BizError = channelerr.BizError
 
 var (
-	NewSDKError  = channelerr.NewSDKError
-	LocalizedMsg = channelerr.LocalizedMsg
+	NewSDKError      = channelerr.NewSDKError
+	NewResultUnknown = channelerr.NewResultUnknown
+	LocalizedMsg     = channelerr.LocalizedMsg
 )

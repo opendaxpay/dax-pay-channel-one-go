@@ -24,6 +24,8 @@ var (
 	SystemError             = ChannelError{10006, "channel.error.systemError"}
 	ValidateParams          = ChannelError{10007, "channel.error.validateParams"}
 	ResponseVerifyFailed    = ChannelError{10008, "channel.error.responseVerifyFailed"}
+	// 结果未知(用户支付中/付款码已使用/订单已支付等, 需主应用查单确认最终状态)
+	ResultUnknown = ChannelError{10009, "channel.error.resultUnknown"}
 )
 
 // 获取当前 locale 下的本地化消息

@@ -4,7 +4,10 @@
     "encryptFailed": "Penyulitan pengangkutan saluran gagal",
     "ciphertextInvalid": "Panjang ciphertext pengangkutan saluran tidak sah",
     "decryptFailed": "Penyahsulitan pengangkutan saluran gagal",
-    "requestHeaderMissing": "Penyulitan pengangkutan saluran: permintaan tiada pengepala penyulitan"
+    "requestHeaderMissing": "Penyulitan pengangkutan saluran: permintaan tiada pengepala penyulitan",
+    "appConfigMissing": "Konfigurasi aplikasi saluran kosong: {0}",
+    "configMissing": "Konfigurasi penyulitan pengangkutan saluran tiada: {0}",
+    "responseHeaderMissing": "Respons saluran tiada pengepala penyulitan pengangkutan {0}"
   },
   "success": "kejayaan",
   "channelNotFound": "Kod saluran tidak disokong",
@@ -50,5 +53,8 @@
   "douyinPayFailed": "{0}",
   "douyinCloseFailed": "{0}",
   "douyinPayMethodNull": "Kaedah pembayaran Douyin mestilah tidak batal",
-  "douyinJsapiNoOpenId": "openid diperlukan untuk pembayaran Douyin JSAPI"
+  "douyinJsapiNoOpenId": "openid diperlukan untuk pembayaran Douyin JSAPI",
+  "resultUnknown": "Keputusan pemprosesan saluran tidak diketahui, sedang mengesahkan status akhir",
+  "wechatPayResultUnknown": "Keputusan pembayaran WeChat tidak diketahui (pesanan mungkin telah dibayar/kod kebenaran telah digunakan), sedang mengesahkan status akhir: {0}",
+  "alipayPayResultUnknown": "Keputusan pembayaran Alipay tidak diketahui (pesanan mungkin telah dibayar/kod kebenaran telah digunakan), sedang mengesahkan status akhir: {0}"
 }

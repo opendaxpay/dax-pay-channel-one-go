@@ -9,14 +9,16 @@ import (
 )
 
 const (
-	h5SceneType    = "Wap"
-	currencyCNY    = "CNY"
-	statusSuccess  = "SUCCESS"
-	statusClosed   = "CLOSED"
+	h5SceneType      = "Wap"
+	currencyCNY      = "CNY"
+	statusSuccess    = "SUCCESS"
+	statusClosed     = "CLOSED"
 	errOrderNotExist = "ORDER_NOT_EXIST"
 	errOrderClosed   = "ORDER_CLOSED"
 	errUserPaying    = "USERPAYING"
 	errSystemError   = "SYSTEMERROR"
+	errOrderPaid     = "ORDERPAID"
+	errAuthCodeUsed  = "AUTH_CODE_USED"
 )
 
 func newClient(cred *wechat.SdkCredential) (*openapi.Client, error) {
@@ -77,10 +79,23 @@ func wrapAPIErr(messageKey string, err error) error {
 	if be, ok := err.(*wechat.BizError); ok {
 		return be
 	}
+	// 订单已支付/付款码已被使用: 实际可能是之前请求已成功(结果未知), 归入结果未知由主应用查单确认
+	if isPayResultUnknown(err) {
+		return wechat.NewResultUnknown("channel.error.wechatPayResultUnknown", err.Error())
+	}
 	if apiErr, ok := err.(*openapi.APIError); ok {
 		return wechat.NewSDKError(messageKey, apiErr.Error())
 	}
 	return wechat.NewSDKError(messageKey, err.Error())
+}
+
+// isPayResultUnknown：订单已支付/付款码已被使用，结果未知
+func isPayResultUnknown(err error) bool {
+	apiErr, ok := err.(*openapi.APIError)
+	if !ok {
+		return false
+	}
+	return apiErr.Code == errOrderPaid || apiErr.Code == errAuthCodeUsed
 }
 
 func isCodepayPaying(err error) bool {

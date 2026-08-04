@@ -4,7 +4,10 @@
     "encryptFailed": "การเข้ารหัสการส่งผ่านช่องทางล้มเหลว",
     "ciphertextInvalid": "ความยาว ciphertext การส่งผ่านช่องทางไม่ถูกต้อง",
     "decryptFailed": "การถอดรหัสการส่งผ่านช่องทางล้มเหลว",
-    "requestHeaderMissing": "การเข้ารหัสการส่งผ่านช่องทาง: คำขอไม่มีส่วนหัวการเข้ารหัส"
+    "requestHeaderMissing": "การเข้ารหัสการส่งผ่านช่องทาง: คำขอไม่มีส่วนหัวการเข้ารหัส",
+    "appConfigMissing": "การตั้งค่าแอปช่องทางว่างเปล่า: {0}",
+    "configMissing": "ไม่มีการตั้งค่าการเข้ารหัสการส่งช่องทาง: {0}",
+    "responseHeaderMissing": "การตอบกลับช่องทางไม่มีส่วนหัวเข้ารหัสการส่ง {0}"
   },
   "success": "ความสำเร็จ",
   "channelNotFound": "รหัสช่องที่ไม่รองรับ",
@@ -50,5 +53,8 @@
   "douyinPayFailed": "{0}",
   "douyinCloseFailed": "{0}",
   "douyinPayMethodNull": "วิธีการชำระเงิน Douyin จะต้องไม่เป็นโมฆะ",
-  "douyinJsapiNoOpenId": "openid จำเป็นสำหรับการชำระเงิน Douyin JSAPI"
+  "douyinJsapiNoOpenId": "openid จำเป็นสำหรับการชำระเงิน Douyin JSAPI",
+  "resultUnknown": "ไม่ทราบผลการประมวลผลช่องทาง กำลังยืนยันสถานะสุดท้าย",
+  "wechatPayResultUnknown": "ไม่ทราบผลการชำระเงิน WeChat (คำสั่งซื้ออาจชำระแล้ว/รหัสผู้ใช้ถูกใช้แล้ว) กำลังยืนยันสถานะสุดท้าย: {0}",
+  "alipayPayResultUnknown": "ไม่ทราบผลการชำระเงิน Alipay (คำสั่งซื้ออาจชำระแล้ว/รหัสผู้ใช้ถูกใช้แล้ว) กำลังยืนยันสถานะสุดท้าย: {0}"
 }

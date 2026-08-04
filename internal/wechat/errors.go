@@ -11,5 +11,6 @@ var (
 	NewSDKError      = channelerr.NewSDKError
 	NewValidateError = channelerr.NewValidateError
 	NewConfigError   = channelerr.NewConfigError
+	NewResultUnknown = channelerr.NewResultUnknown
 	LocalizedMsg     = channelerr.LocalizedMsg
 )
