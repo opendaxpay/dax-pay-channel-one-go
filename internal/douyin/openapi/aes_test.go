@@ -8,7 +8,7 @@ import (
 
 func TestDecryptAESGCMKnownVector(t *testing.T) {
 	key := "0123456789abcdef0123456789abcdef" // 32
-	nonce := "0123456789ab"                     // 12
+	nonce := "0123456789ab"                   // 12
 	aad := "certificate"
 	plain := []byte("hello-douyin-aead")
 

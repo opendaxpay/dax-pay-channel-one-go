@@ -2,17 +2,17 @@ package alipay
 
 // SdkCredential：通道凭证（对标 Boot AlipaySdkCredential）
 type SdkCredential struct {
-	AliAppId       string `json:"aliAppId"`
-	PrivateKey     string `json:"privateKey"`
+	AliAppId        string `json:"aliAppId"`
+	PrivateKey      string `json:"privateKey"`
 	AlipayPublicKey string `json:"alipayPublicKey"`
-	AppCert        string `json:"appCert"`
-	AlipayCert     string `json:"alipayCert"`
-	AlipayRootCert string `json:"alipayRootCert"`
-	ServerURL      string `json:"serverUrl"`
-	SignType       string `json:"signType"`
-	AuthType       string `json:"authType"`
-	Sandbox        *bool  `json:"sandbox"`
-	AppAuthToken   string `json:"appAuthToken"`
+	AppCert         string `json:"appCert"`
+	AlipayCert      string `json:"alipayCert"`
+	AlipayRootCert  string `json:"alipayRootCert"`
+	ServerURL       string `json:"serverUrl"`
+	SignType        string `json:"signType"`
+	AuthType        string `json:"authType"`
+	Sandbox         *bool  `json:"sandbox"`
+	AppAuthToken    string `json:"appAuthToken"`
 }
 
 // IsCert：authType=cert 为证书模式，其余（含空）为公钥模式

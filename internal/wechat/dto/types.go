@@ -24,15 +24,15 @@ type PayReq struct {
 
 // PayResp：下单响应（对标 WechatPayResp）
 type PayResp struct {
-	OutTradeNo    string                 `json:"outTradeNo,omitempty"`
-	TransactionID string                 `json:"transactionId,omitempty"`
-	PayBody       string                 `json:"payBody,omitempty"`
-	PayBodyType   PayBodyType            `json:"payBodyType,omitempty"`
-	Complete      bool                   `json:"complete"`
-	FinishTime    *jsonx.OffsetDateTime  `json:"finishTime,omitempty"`
-	TotalAmount   *jsonx.Int64String     `json:"totalAmount,omitempty"`
-	PayerTotal    *jsonx.Int64String     `json:"payerTotal,omitempty"`
-	OpenID        string                 `json:"openId,omitempty"`
+	OutTradeNo    string                `json:"outTradeNo,omitempty"`
+	TransactionID string                `json:"transactionId,omitempty"`
+	PayBody       string                `json:"payBody,omitempty"`
+	PayBodyType   PayBodyType           `json:"payBodyType,omitempty"`
+	Complete      bool                  `json:"complete"`
+	FinishTime    *jsonx.OffsetDateTime `json:"finishTime,omitempty"`
+	TotalAmount   *jsonx.Int64String    `json:"totalAmount,omitempty"`
+	PayerTotal    *jsonx.Int64String    `json:"payerTotal,omitempty"`
+	OpenID        string                `json:"openId,omitempty"`
 }
 
 // SyncReq：查单请求

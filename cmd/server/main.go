@@ -16,6 +16,7 @@ import (
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
 	"daxpay.open/dax-pay-channel-one-go/internal/server"
 	"daxpay.open/dax-pay-channel-one-go/internal/transport"
+	"daxpay.open/dax-pay-channel-one-go/internal/version"
 )
 
 func main() {
@@ -68,7 +69,7 @@ func main() {
 	}
 
 	go func() {
-		slog.Info("daxpay-channel-one-go starting", "addr", addr, "config", cfgPath)
+		slog.Info("daxpay-channel-one-go starting", "addr", addr, "version", version.Version, "config", cfgPath)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("server failed", "err", err)
 			os.Exit(1)

@@ -9,9 +9,9 @@ import (
 
 // 服务配置（对标 Boot application.yml）
 type Config struct {
-	Server  ServerConfig    `yaml:"server"`
-	Tracing TracingConfig   `yaml:"tracing"`
-	Channel ChannelConfig   `yaml:"channel"`
+	Server  ServerConfig  `yaml:"server"`
+	Tracing TracingConfig `yaml:"tracing"`
+	Channel ChannelConfig `yaml:"channel"`
 }
 
 type ServerConfig struct {

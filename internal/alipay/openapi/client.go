@@ -110,13 +110,13 @@ func (c *Client) buildParams(method string, biz any, notifyURL string) (map[stri
 		return nil, err
 	}
 	params := map[string]string{
-		"app_id":     c.cred.AliAppId,
-		"method":     method,
-		"format":     "JSON",
-		"charset":    "utf-8",
-		"sign_type":  c.cred.SignTypeOrDefault(),
-		"timestamp":  alipay.NowCST(),
-		"version":    "1.0",
+		"app_id":      c.cred.AliAppId,
+		"method":      method,
+		"format":      "JSON",
+		"charset":     "utf-8",
+		"sign_type":   c.cred.SignTypeOrDefault(),
+		"timestamp":   alipay.NowCST(),
+		"version":     "1.0",
 		"biz_content": string(bizJSON),
 	}
 	if notifyURL != "" {

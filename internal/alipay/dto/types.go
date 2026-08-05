@@ -7,31 +7,31 @@ import (
 
 // PayReq：下单请求
 type PayReq struct {
-	OutTradeNo string               `json:"outTradeNo"`
-	Amount     jsonx.Int64String    `json:"amount"`
-	Subject    string               `json:"subject"`
-	Body       string               `json:"body"`
-	Method     PayMethod            `json:"method"`
+	OutTradeNo string                `json:"outTradeNo"`
+	Amount     jsonx.Int64String     `json:"amount"`
+	Subject    string                `json:"subject"`
+	Body       string                `json:"body"`
+	Method     PayMethod             `json:"method"`
 	ExpireTime *jsonx.OffsetDateTime `json:"expireTime"`
-	NotifyURL  string               `json:"notifyUrl"`
-	AuthCode   string               `json:"authCode"`
-	OpenID     string               `json:"openId"`
+	NotifyURL  string                `json:"notifyUrl"`
+	AuthCode   string                `json:"authCode"`
+	OpenID     string                `json:"openId"`
 	Credential *alipay.SdkCredential `json:"credential"`
 }
 
 // PayResp：下单响应
 type PayResp struct {
-	OutTradeNo     string               `json:"outTradeNo,omitempty"`
-	TradeNo        string               `json:"tradeNo,omitempty"`
-	PayBody        string               `json:"payBody,omitempty"`
-	PayBodyType    PayBodyType          `json:"payBodyType,omitempty"`
-	Complete       bool                 `json:"complete"`
+	OutTradeNo     string                `json:"outTradeNo,omitempty"`
+	TradeNo        string                `json:"tradeNo,omitempty"`
+	PayBody        string                `json:"payBody,omitempty"`
+	PayBodyType    PayBodyType           `json:"payBodyType,omitempty"`
+	Complete       bool                  `json:"complete"`
 	FinishTime     *jsonx.OffsetDateTime `json:"finishTime,omitempty"`
-	TotalAmount    *jsonx.Int64String   `json:"totalAmount,omitempty"`
-	BuyerPayAmount *jsonx.Int64String   `json:"buyerPayAmount,omitempty"`
-	ReceiptAmount  *jsonx.Int64String   `json:"receiptAmount,omitempty"`
-	BuyerUserID    string               `json:"buyerUserId,omitempty"`
-	BuyerOpenID    string               `json:"buyerOpenId,omitempty"`
+	TotalAmount    *jsonx.Int64String    `json:"totalAmount,omitempty"`
+	BuyerPayAmount *jsonx.Int64String    `json:"buyerPayAmount,omitempty"`
+	ReceiptAmount  *jsonx.Int64String    `json:"receiptAmount,omitempty"`
+	BuyerUserID    string                `json:"buyerUserId,omitempty"`
+	BuyerOpenID    string                `json:"buyerOpenId,omitempty"`
 }
 
 // SyncReq：查单
@@ -141,14 +141,14 @@ type AppAuthTokenReq struct {
 
 // AppAuthTokenResp：授权令牌响应
 type AppAuthTokenResp struct {
-	Code           string `json:"code,omitempty"`
-	SubCode        string `json:"subCode,omitempty"`
-	SubMsg         string `json:"subMsg,omitempty"`
-	AppAuthToken   string `json:"appAuthToken,omitempty"`
+	Code            string `json:"code,omitempty"`
+	SubCode         string `json:"subCode,omitempty"`
+	SubMsg          string `json:"subMsg,omitempty"`
+	AppAuthToken    string `json:"appAuthToken,omitempty"`
 	AppRefreshToken string `json:"appRefreshToken,omitempty"`
-	AuthAppID      string `json:"authAppId,omitempty"`
-	UserID         string `json:"userId,omitempty"`
-	OpenID         string `json:"openId,omitempty"`
-	ExpiresIn      string `json:"expiresIn,omitempty"`
-	ReExpiresIn    string `json:"reExpiresIn,omitempty"`
+	AuthAppID       string `json:"authAppId,omitempty"`
+	UserID          string `json:"userId,omitempty"`
+	OpenID          string `json:"openId,omitempty"`
+	ExpiresIn       string `json:"expiresIn,omitempty"`
+	ReExpiresIn     string `json:"reExpiresIn,omitempty"`
 }

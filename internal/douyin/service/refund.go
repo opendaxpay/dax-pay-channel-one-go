@@ -42,10 +42,10 @@ func Refund(ctx context.Context, req *dto.RefundReq) (*dto.RefundResp, error) {
 	}
 
 	var out struct {
-		RefundID     string `json:"refund_id"`
-		Status       string `json:"status"`
-		SuccessTime  string `json:"success_time"`
-		OutRefundNo  string `json:"out_refund_no"`
+		RefundID    string `json:"refund_id"`
+		Status      string `json:"status"`
+		SuccessTime string `json:"success_time"`
+		OutRefundNo string `json:"out_refund_no"`
 	}
 	if err := json.Unmarshal(raw, &out); err != nil {
 		return nil, douyin.NewSDKError("channel.error.douyinRefundFailed", err.Error())

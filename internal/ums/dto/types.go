@@ -7,21 +7,21 @@ import (
 
 // PayReq：下单请求
 type PayReq struct {
-	OutTradeNo     string             `json:"outTradeNo"`
-	Amount         jsonx.Int64String  `json:"amount"`
-	Description    string             `json:"description"`
-	Method         PayMethod          `json:"method"`
-	NotifyURL      string             `json:"notifyUrl"`
-	ClientIP       string             `json:"clientIp"`
-	LimitCreditCard *bool             `json:"limitCreditCard"`
-	WxAppID        string             `json:"wxAppId"`
-	Credential     *ums.SdkCredential `json:"credential"`
+	OutTradeNo      string             `json:"outTradeNo"`
+	Amount          jsonx.Int64String  `json:"amount"`
+	Description     string             `json:"description"`
+	Method          PayMethod          `json:"method"`
+	NotifyURL       string             `json:"notifyUrl"`
+	ClientIP        string             `json:"clientIp"`
+	LimitCreditCard *bool              `json:"limitCreditCard"`
+	WxAppID         string             `json:"wxAppId"`
+	Credential      *ums.SdkCredential `json:"credential"`
 }
 
 // PayResp：下单响应
 type PayResp struct {
-	OutTradeNo  string     `json:"outTradeNo,omitempty"`
-	PayBody     string     `json:"payBody,omitempty"`
+	OutTradeNo  string      `json:"outTradeNo,omitempty"`
+	PayBody     string      `json:"payBody,omitempty"`
 	PayBodyType PayBodyType `json:"payBodyType,omitempty"`
 }
 
@@ -98,8 +98,8 @@ type RefundSyncResp struct {
 
 // CallbackParseReq：回调验签解析
 type CallbackParseReq struct {
-	Credential *ums.SdkCredential  `json:"credential"`
-	Params     map[string]string   `json:"params"`
+	Credential *ums.SdkCredential `json:"credential"`
+	Params     map[string]string  `json:"params"`
 }
 
 // CallbackParseResp：回调解析结果

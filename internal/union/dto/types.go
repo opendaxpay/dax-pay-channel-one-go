@@ -7,14 +7,14 @@ import (
 
 // PayReq：下单请求
 type PayReq struct {
-	OutTradeNo  string                `json:"outTradeNo"`
-	Amount      jsonx.Int64String     `json:"amount"`
-	Description string                `json:"description"`
-	Method      PayMethod             `json:"method"`
-	NotifyURL   string                `json:"notifyUrl"`
-	AuthCode    string                `json:"authCode"`
-	ClientIP    string                `json:"clientIp"`
-	Credential  *union.SdkCredential  `json:"credential"`
+	OutTradeNo  string               `json:"outTradeNo"`
+	Amount      jsonx.Int64String    `json:"amount"`
+	Description string               `json:"description"`
+	Method      PayMethod            `json:"method"`
+	NotifyURL   string               `json:"notifyUrl"`
+	AuthCode    string               `json:"authCode"`
+	ClientIP    string               `json:"clientIp"`
+	Credential  *union.SdkCredential `json:"credential"`
 }
 
 // PayResp：下单响应
@@ -58,13 +58,13 @@ type CloseResp struct {
 
 // RefundReq：退款
 type RefundReq struct {
-	OutTradeNo   string                `json:"outTradeNo"`
-	OrigQueryID  string                `json:"origQueryId"`
-	OutRefundNo  string                `json:"outRefundNo"`
-	RefundAmount jsonx.Int64String     `json:"refundAmount"`
-	NotifyURL    string                `json:"notifyUrl"`
-	Method       PayMethod             `json:"method"`
-	Credential   *union.SdkCredential  `json:"credential"`
+	OutTradeNo   string               `json:"outTradeNo"`
+	OrigQueryID  string               `json:"origQueryId"`
+	OutRefundNo  string               `json:"outRefundNo"`
+	RefundAmount jsonx.Int64String    `json:"refundAmount"`
+	NotifyURL    string               `json:"notifyUrl"`
+	Method       PayMethod            `json:"method"`
+	Credential   *union.SdkCredential `json:"credential"`
 }
 
 // RefundResp：退款响应
