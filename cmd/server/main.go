@@ -69,7 +69,7 @@ func main() {
 	}
 
 	go func() {
-		slog.Info("daxpay-channel-one-go starting", "addr", addr, "version", version.Version, "config", cfgPath)
+		slog.Info("daxpay-channel-one-go starting", "addr", addr, "version", version.Version, "deploy-mode", cfg.Deployment.Mode, "config", cfgPath)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("server failed", "err", err)
 			os.Exit(1)
