@@ -15,6 +15,7 @@ type PayReq struct {
 	ClientIP    string                `json:"clientIp"`
 	ExpiredTime *jsonx.OffsetDateTime `json:"expiredTime"`
 	NotifyURL   string                `json:"notifyUrl"`
+	Allocation  *bool                 `json:"allocation"`
 	Credential  *douyin.SdkCredential `json:"credential"`
 }
 
@@ -113,4 +114,98 @@ type CallbackParseResp struct {
 	SuccessTime   string             `json:"successTime,omitempty"`
 	OpenID        string             `json:"openid,omitempty"`
 	Verified      bool               `json:"verified"`
+}
+
+// ReportInfo：转账场景报备信息(transfer_scene_report_infos)
+type ReportInfo struct {
+	InfoType    string `json:"infoType"`
+	InfoContent string `json:"infoContent"`
+}
+
+// TransferReq：转账发起/同步共用请求(对标 DouyinTransferReq)
+//
+// 发起时 amount/openid(或 phoneNumber)/scene 必填; 同步按 outBillNo(通道单号)或 transferNo(平台单号)反查。
+type TransferReq struct {
+	OutBillNo    string                `json:"outBillNo"`
+	TransferNo   string                `json:"transferNo"`
+	Amount       jsonx.Int64String     `json:"amount"`
+	Openid       string                `json:"openid"`
+	PhoneNumber  string                `json:"phoneNumber"`
+	Scene        string                `json:"scene"`
+	UserName     string                `json:"userName"`
+	Remark       string                `json:"remark"`
+	Perception   string                `json:"perception"`
+	ReportInfos  []ReportInfo          `json:"reportInfos"`
+	NotifyURL    string                `json:"notifyUrl"`
+	Credential   *douyin.SdkCredential `json:"credential"`
+}
+
+// TransferResp：转账响应(对标 DouyinTransferResp)
+type TransferResp struct {
+	TransferBillNo string `json:"transferBillNo,omitempty"`
+	State          string `json:"state,omitempty"`
+	FailReason     string `json:"failReason,omitempty"`
+}
+
+// ReceiverInfo：分账接收方
+type ReceiverInfo struct {
+	Type    string            `json:"type"`
+	Account string            `json:"account"`
+	Name    string            `json:"name"`
+	Amount  jsonx.Int64String `json:"amount"`
+}
+
+// AllocReq：分账发起/同步共用请求(对标 DouyinAllocReq)
+type AllocReq struct {
+	OutTradeNo        string                `json:"outTradeNo"`
+	TradeNo           string                `json:"tradeNo"`
+	ReceiverInfoDtos  []ReceiverInfo        `json:"receiverInfoDtos"`
+	NotifyURL         string                `json:"notifyUrl"`
+	Credential        *douyin.SdkCredential `json:"credential"`
+}
+
+// ReceiverSplitResult：分账逐明细结果
+type ReceiverSplitResult struct {
+	Account    string         `json:"account,omitempty"`
+	Amount     *jsonx.Int64String `json:"amount,omitempty"`
+	SplitStatus string        `json:"splitStatus,omitempty"`
+	FailReason string         `json:"failReason,omitempty"`
+	FinishTime string         `json:"finishTime,omitempty"`
+}
+
+// AllocResp：分账响应(对标 DouyinAllocResp)
+type AllocResp struct {
+	OrderId                 string                 `json:"orderId,omitempty"`
+	Status                  string                 `json:"status,omitempty"`
+	ReceiverSplitResultDtos []ReceiverSplitResult  `json:"receiverSplitResultDtos,omitempty"`
+	ErrorCode               string                 `json:"errorCode,omitempty"`
+	ErrorMsg                string                 `json:"errorMsg,omitempty"`
+}
+
+// TransferCallbackParseResp：转账回调解析响应(对标 DouyinTransferCallbackParseResp)
+//
+// 抖音转账通知仅含 order_id(通道转账单号), 不含商户单号。
+type TransferCallbackParseResp struct {
+	Verified           bool   `json:"verified"`
+	TransferBillNo     string `json:"transferBillNo,omitempty"`
+	TransferState      string `json:"transferState,omitempty"`
+	TransferStatusDesc string `json:"transferStatusDesc,omitempty"`
+	SuccessTime        string `json:"successTime,omitempty"`
+}
+
+// AllocCallbackReceiverResult：分账回调逐明细结果
+type AllocCallbackReceiverResult struct {
+	Account    string `json:"account,omitempty"`
+	SplitStatus string `json:"splitStatus,omitempty"`
+	FailReason string `json:"failReason,omitempty"`
+	FinishTime string `json:"finishTime,omitempty"`
+}
+
+// AllocCallbackParseResp：分账回调解析响应(对标 DouyinAllocCallbackParseResp)
+type AllocCallbackParseResp struct {
+	Verified          bool                          `json:"verified"`
+	OrderId           string                        `json:"orderId,omitempty"`
+	State             string                        `json:"state,omitempty"`
+	SplitFinishTime   string                        `json:"splitFinishTime,omitempty"`
+	ReceiverResults   []AllocCallbackReceiverResult `json:"receiverResults,omitempty"`
 }

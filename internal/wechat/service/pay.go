@@ -85,6 +85,10 @@ func buildBaseBody(req *dto.PayReq, isv bool) map[string]any {
 	if req.ExpireTime != nil {
 		body["time_expire"] = formatExpire(*req.ExpireTime)
 	}
+	// 分账订单: 透传 settle_info.profit_sharing=true
+	if req.Allocation != nil && *req.Allocation {
+		body["settle_info"] = map[string]any{"profit_sharing": true}
+	}
 	return body
 }
 
@@ -229,6 +233,10 @@ func payCodepay(ctx context.Context, client *openapi.Client, req *dto.PayReq, re
 	}
 	if req.Attach != "" {
 		body["attach"] = req.Attach
+	}
+	// 分账订单: 透传 settle_info.profit_sharing=true
+	if req.Allocation != nil && *req.Allocation {
+		body["settle_info"] = map[string]any{"profit_sharing": true}
 	}
 
 	raw, err := client.Do(ctx, http.MethodPost, payPath("codepay", isv), body)

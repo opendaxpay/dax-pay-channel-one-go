@@ -11,6 +11,14 @@ import (
 	"daxpay.open/dax-pay-channel-one-go/internal/middleware"
 )
 
+// applyAllocation：分账订单透传 settle_info.profit_sharing=true
+func applyAllocation(body map[string]any, req *dto.PayReq) {
+	if req.Allocation == nil || !*req.Allocation {
+		return
+	}
+	body["settle_info"] = map[string]any{"profit_sharing": true}
+}
+
 // Pay：抖音下单（QR / JSAPI / H5 / APP）
 func Pay(ctx context.Context, req *dto.PayReq) (*dto.PayResp, error) {
 	middleware.LoggerWithTrace(ctx).Info("douyin pay",
@@ -47,6 +55,7 @@ func Pay(ctx context.Context, req *dto.PayReq) (*dto.PayResp, error) {
 
 func payNative(ctx context.Context, client *openapi.Client, req *dto.PayReq, resp *dto.PayResp) error {
 	body := buildPayBase(req.Credential, req.OutTradeNo, req.Description, req.NotifyURL, req.ClientIP, int64(req.Amount), req.ExpiredTime)
+	applyAllocation(body, req)
 	raw, err := client.Do(ctx, http.MethodPost, "/v1/trade/transactions/native", body)
 	if err != nil {
 		return wrapAPIErr("channel.error.douyinPayFailed", err)
@@ -72,6 +81,7 @@ func payJSAPI(ctx context.Context, client *openapi.Client, req *dto.PayReq, resp
 	}
 	body := buildPayBase(req.Credential, req.OutTradeNo, req.Description, req.NotifyURL, req.ClientIP, int64(req.Amount), req.ExpiredTime)
 	body["payer"] = map[string]any{"openid": req.OpenID}
+	applyAllocation(body, req)
 	raw, err := client.Do(ctx, http.MethodPost, "/v1/trade/transactions/jsapi", body)
 	if err != nil {
 		return wrapAPIErr("channel.error.douyinPayFailed", err)
@@ -96,6 +106,7 @@ func payJSAPI(ctx context.Context, client *openapi.Client, req *dto.PayReq, resp
 
 func payAPP(ctx context.Context, client *openapi.Client, req *dto.PayReq, resp *dto.PayResp) error {
 	body := buildPayBase(req.Credential, req.OutTradeNo, req.Description, req.NotifyURL, req.ClientIP, int64(req.Amount), req.ExpiredTime)
+	applyAllocation(body, req)
 	raw, err := client.Do(ctx, http.MethodPost, "/v1/trade/transactions/app", body)
 	if err != nil {
 		return wrapAPIErr("channel.error.douyinPayFailed", err)
@@ -123,6 +134,7 @@ func payH5(ctx context.Context, client *openapi.Client, req *dto.PayReq, resp *d
 		scene["payer_client_ip"] = req.ClientIP
 	}
 	body["scene_info"] = scene
+	applyAllocation(body, req)
 	raw, err := client.Do(ctx, http.MethodPost, "/v1/trade/transactions/h5", body)
 	if err != nil {
 		return wrapAPIErr("channel.error.douyinPayFailed", err)

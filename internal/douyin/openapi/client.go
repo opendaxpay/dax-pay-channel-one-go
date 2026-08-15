@@ -75,10 +75,17 @@ func (e *APIError) Error() string {
 
 // Do：签名并请求
 func (c *Client) Do(ctx context.Context, method, pathWithQuery string, body any) ([]byte, error) {
-	return c.do(ctx, method, pathWithQuery, body, true)
+	return c.do(ctx, method, pathWithQuery, body, true, nil)
 }
 
-func (c *Client) do(ctx context.Context, method, pathWithQuery string, body any, verifyResp bool) ([]byte, error) {
+// DoWithHeaders：签名并请求(附加自定义请求头, 如转账/分账的 Douyinpay-Serial)
+//
+// 签名原文(method/path/timestamp/nonce/body)不受附加头影响, 与 [Do] 同机制。
+func (c *Client) DoWithHeaders(ctx context.Context, method, pathWithQuery string, body any, headers map[string]string) ([]byte, error) {
+	return c.do(ctx, method, pathWithQuery, body, true, headers)
+}
+
+func (c *Client) do(ctx context.Context, method, pathWithQuery string, body any, verifyResp bool, headers map[string]string) ([]byte, error) {
 	var bodyBytes []byte
 	var bodyStr string
 	if body != nil {
@@ -112,6 +119,9 @@ func (c *Client) do(ctx context.Context, method, pathWithQuery string, body any,
 	req.Header.Set("User-Agent", "daxpay-channel-one-go")
 	if bodyBytes != nil {
 		req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	}
+	for k, v := range headers {
+		req.Header.Set(k, v)
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -171,7 +181,7 @@ func (c *Client) resolveVerifyKey(ctx context.Context, serial string) (*rsa.Publ
 }
 
 func (c *Client) downloadAndCacheCert(ctx context.Context, wantSerial string) (*rsa.PublicKey, error) {
-	raw, err := c.do(ctx, http.MethodGet, certPath, nil, false)
+	raw, err := c.do(ctx, http.MethodGet, certPath, nil, false, nil)
 	if err != nil {
 		return nil, fmt.Errorf("download platform certs: %w", err)
 	}
@@ -183,6 +193,23 @@ func (c *Client) downloadAndCacheCert(ctx context.Context, wantSerial string) (*
 		return nil, fmt.Errorf("platform cert serial not found: %s", wantSerial)
 	}
 	return pub, nil
+}
+
+// PlatformCert：获取平台证书公钥与序列号(转账/分账敏感字段加密)
+//
+// 缓存未命中时下载 getPlatformCertificates 并取最新一张;
+// 序列号格式为十六进制大写, 与 SDK PemUtil.getSerialNumber 一致, 用于 Douyinpay-Serial 头。
+func (c *Client) PlatformCert(ctx context.Context) (*rsa.PublicKey, string, error) {
+	if pub := c.certs.Latest(); pub != nil {
+		return pub, c.certs.LatestSerial(), nil
+	}
+	if _, err := c.downloadAndCacheCert(ctx, ""); err != nil {
+		return nil, "", err
+	}
+	if pub := c.certs.Latest(); pub != nil {
+		return pub, c.certs.LatestSerial(), nil
+	}
+	return nil, "", fmt.Errorf("no platform cert cached")
 }
 
 // VerifyNotify：校验回调签名

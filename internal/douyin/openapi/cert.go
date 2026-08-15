@@ -10,8 +10,10 @@ import (
 
 // CertStore：平台证书缓存（cert_no → 公钥）
 type CertStore struct {
-	mu    sync.RWMutex
-	certs map[string]*rsa.PublicKey
+	mu         sync.RWMutex
+	certs      map[string]*rsa.PublicKey
+	latestPub  *rsa.PublicKey // 最近加载的证书公钥(转账/分账敏感字段加密用)
+	latestSN   string         // 最近加载的证书序列号(十六进制大写, Douyinpay-Serial 头)
 }
 
 // NewCertStore：新建空缓存
@@ -26,11 +28,27 @@ func (s *CertStore) Get(serial string) *rsa.PublicKey {
 	return s.certs[serial]
 }
 
+// Latest：最近一次加载的平台证书公钥
+func (s *CertStore) Latest() *rsa.PublicKey {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.latestPub
+}
+
+// LatestSerial：最近一次加载的平台证书序列号(十六进制大写)
+func (s *CertStore) LatestSerial() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.latestSN
+}
+
 // Put：写入缓存
 func (s *CertStore) Put(serial string, pub *rsa.PublicKey) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.certs[serial] = pub
+	s.latestPub = pub
+	s.latestSN = serial
 }
 
 // platformCertListResp：GET getPlatformCertificates 响应

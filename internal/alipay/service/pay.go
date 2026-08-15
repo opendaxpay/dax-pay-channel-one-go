@@ -87,32 +87,38 @@ func Pay(ctx context.Context, req *dto.PayReq) (*dto.PayResp, error) {
 
 	switch req.Method {
 	case dto.MethodWAP:
-		err = payPage(client, "alipay.trade.wap.pay", map[string]any{
+		biz := map[string]any{
 			"out_trade_no": req.OutTradeNo,
 			"total_amount": amount,
 			"subject":      req.Subject,
 			"body":         omitEmpty(req.Body),
 			"product_code": "QUICK_WAP_WAY",
 			"time_expire":  omitEmpty(expire),
-		}, req.NotifyURL, resp, dto.BodyLINK)
+		}
+		applyAllocation(biz, req)
+		err = payPage(client, "alipay.trade.wap.pay", biz, req.NotifyURL, resp, dto.BodyLINK)
 	case dto.MethodPC:
-		err = payPage(client, "alipay.trade.page.pay", map[string]any{
+		biz := map[string]any{
 			"out_trade_no": req.OutTradeNo,
 			"total_amount": amount,
 			"subject":      req.Subject,
 			"body":         omitEmpty(req.Body),
 			"product_code": "FAST_INSTANT_TRADE_PAY",
 			"time_expire":  omitEmpty(expire),
-		}, req.NotifyURL, resp, dto.BodyLINK)
+		}
+		applyAllocation(biz, req)
+		err = payPage(client, "alipay.trade.page.pay", biz, req.NotifyURL, resp, dto.BodyLINK)
 	case dto.MethodAPP:
-		err = paySdk(client, "alipay.trade.app.pay", map[string]any{
+		biz := map[string]any{
 			"out_trade_no": req.OutTradeNo,
 			"total_amount": amount,
 			"subject":      req.Subject,
 			"body":         omitEmpty(req.Body),
 			"product_code": "QUICK_MSECURITY_PAY",
 			"time_expire":  omitEmpty(expire),
-		}, req.NotifyURL, resp)
+		}
+		applyAllocation(biz, req)
+		err = paySdk(client, "alipay.trade.app.pay", biz, req.NotifyURL, resp)
 	case dto.MethodQR:
 		err = payQr(ctx, req, amount, expire, resp)
 	case dto.MethodBARCODE:
@@ -158,6 +164,7 @@ func payQr(ctx context.Context, req *dto.PayReq, amount, expire string, resp *dt
 		"body":         omitEmpty(req.Body),
 		"time_expire":  omitEmpty(expire),
 	}
+	applyAllocation(biz, req)
 	cleanBiz(biz)
 	var out struct {
 		gatewayBiz
@@ -185,6 +192,7 @@ func payBarcode(ctx context.Context, req *dto.PayReq, amount, expire string, res
 		"auth_code":    req.AuthCode,
 		"time_expire":  omitEmpty(expire),
 	}
+	applyAllocation(biz, req)
 	cleanBiz(biz)
 	var out struct {
 		gatewayBiz
@@ -229,6 +237,7 @@ func payJsapi(ctx context.Context, req *dto.PayReq, amount, expire string, resp 
 	} else {
 		biz["op_buyer_open_id"] = req.OpenID
 	}
+	applyAllocation(biz, req)
 	cleanBiz(biz)
 	var out struct {
 		gatewayBiz
@@ -245,6 +254,14 @@ func payJsapi(ctx context.Context, req *dto.PayReq, amount, expire string, resp 
 	resp.PayBody = out.TradeNo
 	resp.PayBodyType = dto.BodyIdentifier
 	return nil
+}
+
+// applyAllocation：分账订单透传 extend_params.royalty_freeze=true 冻结分账资金
+func applyAllocation(biz map[string]any, req *dto.PayReq) {
+	if req.Allocation == nil || !*req.Allocation {
+		return
+	}
+	biz["extend_params"] = map[string]any{"royalty_freeze": "true"}
 }
 
 func omitEmpty(s string) any {

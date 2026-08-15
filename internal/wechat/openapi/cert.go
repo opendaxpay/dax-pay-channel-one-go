@@ -9,8 +9,9 @@ import (
 
 // CertStore：平台证书缓存（按 serial → 公钥）
 type CertStore struct {
-	mu    sync.RWMutex
-	certs map[string]*rsa.PublicKey
+	mu     sync.RWMutex
+	certs  map[string]*rsa.PublicKey
+	latest *rsa.PublicKey // 最近一次加载的证书(转账敏感字段加密用, 微信一般只有一张有效证书)
 }
 
 // NewCertStore：新建空缓存
@@ -25,11 +26,19 @@ func (s *CertStore) Get(serial string) *rsa.PublicKey {
 	return s.certs[serial]
 }
 
+// Latest：最近一次加载的平台证书公钥(证书轮换场景取最新)
+func (s *CertStore) Latest() *rsa.PublicKey {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.latest
+}
+
 // Put：写入缓存
 func (s *CertStore) Put(serial string, pub *rsa.PublicKey) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.certs[serial] = pub
+	s.latest = pub
 }
 
 // platformCertListResp：GET /v3/certificates 响应

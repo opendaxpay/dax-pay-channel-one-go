@@ -20,6 +20,31 @@ func ParseRefundCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.Ca
 	return doParseCallback(ctx, req, true)
 }
 
+// ParseTransferCallback：转账回调验签解析
+func ParseTransferCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.TransferCallbackParseResp {
+	resp := &dto.TransferCallbackParseResp{}
+	if req == nil || len(req.Params) == 0 {
+		middleware.LoggerWithTrace(ctx).Error("alipay transfer callback params empty")
+		return resp
+	}
+	if !verifyCallbackSign(req.Credential, req.Params) {
+		middleware.LoggerWithTrace(ctx).Error("alipay transfer callback verify failed")
+		return resp
+	}
+	resp.Success = true
+	params := req.Params
+	// 转账回调: out_biz_no=商户转账单号(平台 transferNo) / order_id=支付宝转账单号(outTransferNo)
+	resp.OutBizNo = params["out_biz_no"]
+	resp.OrderID = params["order_id"]
+	// 状态原样透传(SUCCESS/FAIL/DEALING/REFUND/CLOSED), 映射由主应用完成
+	resp.TransferStatus = params["status"]
+	// 失败原因: sub_msg 优先, 缺失回退
+	resp.FailReason = params["sub_msg"]
+	// 完成时间(pay_date, 东八区本地时间字面量)
+	resp.FinishTime = alipay.ParseCst(params["pay_date"])
+	return resp
+}
+
 func doParseCallback(ctx context.Context, req *dto.CallbackParseReq, refund bool) *dto.CallbackParseResp {
 	tradeType := "PAY"
 	if refund {

@@ -138,3 +138,68 @@ func AlipayAppAuthToken(c *gin.Context) {
 	}
 	writeOK(c, data)
 }
+
+// AlipayTransfer：POST /channel/alipay/transfer
+func AlipayTransfer(c *gin.Context) {
+	var req dto.TransferReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Transfer(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// AlipayTransferSync：POST /channel/alipay/transfer-sync
+func AlipayTransferSync(c *gin.Context) {
+	var req dto.TransferReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.TransferSync(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// AlipayAlloc：POST /channel/alipay/alloc
+func AlipayAlloc(c *gin.Context) {
+	var req dto.AllocReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Alloc(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// AlipayAllocSync：POST /channel/alipay/alloc-sync
+func AlipayAllocSync(c *gin.Context) {
+	var req dto.AllocReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.AllocSync(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// AlipayCallbackParseTransfer：POST /channel/alipay/callback/parse-transfer
+func AlipayCallbackParseTransfer(c *gin.Context) {
+	var req dto.CallbackParseReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	writeOK(c, service.ParseTransferCallback(c.Request.Context(), &req))
+}

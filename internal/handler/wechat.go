@@ -98,6 +98,71 @@ func WechatCallbackParseRefund(c *gin.Context) {
 	writeOK(c, service.ParseRefundCallback(c.Request.Context(), &req))
 }
 
+// WechatTransfer：POST /channel/wechat/transfer
+func WechatTransfer(c *gin.Context) {
+	var req dto.TransferReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Transfer(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// WechatTransferSync：POST /channel/wechat/transfer-sync
+func WechatTransferSync(c *gin.Context) {
+	var req dto.TransferReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.TransferSync(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// WechatAlloc：POST /channel/wechat/alloc
+func WechatAlloc(c *gin.Context) {
+	var req dto.AllocReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Alloc(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// WechatAllocSync：POST /channel/wechat/alloc-sync
+func WechatAllocSync(c *gin.Context) {
+	var req dto.AllocReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.AllocSync(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// WechatCallbackParseTransfer：POST /channel/wechat/callback/parse-transfer
+func WechatCallbackParseTransfer(c *gin.Context) {
+	var req dto.CallbackParseReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	writeOK(c, service.ParseTransferCallback(c.Request.Context(), &req))
+}
+
 // WechatIsvPay：POST /channel/wechat/isv/pay
 func WechatIsvPay(c *gin.Context) {
 	var req dto.PayReq

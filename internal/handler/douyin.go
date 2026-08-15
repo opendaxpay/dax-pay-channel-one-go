@@ -97,3 +97,77 @@ func DouyinCallbackParseRefund(c *gin.Context) {
 	}
 	writeOK(c, service.ParseRefundCallback(c.Request.Context(), &req))
 }
+
+// DouyinTransfer：POST /channel/douyin/transfer
+func DouyinTransfer(c *gin.Context) {
+	var req dto.TransferReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Transfer(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// DouyinTransferSync：POST /channel/douyin/transfer-sync
+func DouyinTransferSync(c *gin.Context) {
+	var req dto.TransferReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.TransferSync(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// DouyinAlloc：POST /channel/douyin/alloc
+func DouyinAlloc(c *gin.Context) {
+	var req dto.AllocReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.Alloc(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// DouyinAllocSync：POST /channel/douyin/alloc-sync
+func DouyinAllocSync(c *gin.Context) {
+	var req dto.AllocReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.AllocSync(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// DouyinCallbackParseTransfer：POST /channel/douyin/callback/parse-transfer
+func DouyinCallbackParseTransfer(c *gin.Context) {
+	var req dto.CallbackParseReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	writeOK(c, service.ParseTransferCallback(c.Request.Context(), &req))
+}
+
+// DouyinCallbackParseAlloc：POST /channel/douyin/callback/parse-alloc
+func DouyinCallbackParseAlloc(c *gin.Context) {
+	var req dto.CallbackParseReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	writeOK(c, service.ParseAllocCallback(c.Request.Context(), &req))
+}

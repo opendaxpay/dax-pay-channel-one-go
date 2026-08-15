@@ -18,6 +18,19 @@ type notifyEnvelope struct {
 	} `json:"resource"`
 }
 
+// transferNotifyResult：微信转账回调解密后的业务数据(对齐 TransferBillsNotifyResult.DecryptNotifyResult)
+type transferNotifyResult struct {
+	MchID          string `json:"mch_id"`
+	OutBillNo      string `json:"out_bill_no"`
+	TransferBillNo string `json:"transfer_bill_no"`
+	State          string `json:"state"`
+	TransferAmount *int64 `json:"transfer_amount"`
+	Openid         string `json:"openid"`
+	CreateTime     string `json:"create_time"`
+	UpdateTime     string `json:"update_time"`
+	FailReason     string `json:"fail_reason"`
+}
+
 // ParsePayCallback：支付回调验签 + AEAD 解密
 func ParsePayCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.CallbackParseResp {
 	fail := &dto.CallbackParseResp{Verified: false}
@@ -141,4 +154,46 @@ func ParseRefundCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.Ca
 		resp.Amount = ptrInt64(*result.Amount.Refund)
 	}
 	return resp
+}
+
+// ParseTransferCallback：转账回调验签 + AEAD 解密(商家转账到零钱 V3 异步通知)
+func ParseTransferCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.TransferCallbackParseResp {
+	fail := &dto.TransferCallbackParseResp{Verified: false}
+	client, err := newCallbackClient(req.Credential)
+	if err != nil {
+		middleware.LoggerWithTrace(ctx).Error("wechat transfer callback: bad credential", "err", err)
+		return fail
+	}
+	if err := client.VerifyNotify(req.Timestamp, req.Nonce, req.Body, req.Signature, req.Serial); err != nil {
+		middleware.LoggerWithTrace(ctx).Error("wechat transfer callback verify failed", "err", err)
+		return fail
+	}
+	var env notifyEnvelope
+	if err := json.Unmarshal([]byte(req.Body), &env); err != nil {
+		middleware.LoggerWithTrace(ctx).Error("wechat transfer callback parse envelope", "err", err)
+		return fail
+	}
+	plain, err := client.DecryptResource(
+		env.Resource.AssociatedData,
+		env.Resource.Nonce,
+		env.Resource.Ciphertext,
+	)
+	if err != nil {
+		middleware.LoggerWithTrace(ctx).Error("wechat transfer callback decrypt", "err", err)
+		return fail
+	}
+	var result transferNotifyResult
+	if err := json.Unmarshal(plain, &result); err != nil {
+		middleware.LoggerWithTrace(ctx).Error("wechat transfer callback parse plain", "err", err)
+		return fail
+	}
+	// update_time 原串透传(主应用解析), 与 Java 行为一致
+	return &dto.TransferCallbackParseResp{
+		Verified:       true,
+		OutBillNo:      result.OutBillNo,
+		TransferBillNo: result.TransferBillNo,
+		TransferState:  result.State,
+		FailReason:     result.FailReason,
+		UpdateTime:     result.UpdateTime,
+	}
 }

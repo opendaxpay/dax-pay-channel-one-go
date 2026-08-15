@@ -99,6 +99,23 @@ func (c *Client) PrivateKey() *rsa.PrivateKey {
 	return c.privateKey
 }
 
+// PlatformCert：获取微信支付平台证书公钥(转账敏感字段加密用)
+//
+// 缓存未命中时下载 /v3/certificates 并取最新一张; 微信平台证书一般仅一张,
+// 轮换期多张时按下载列表最后一张为准。
+func (c *Client) PlatformCert(ctx context.Context) (*rsa.PublicKey, error) {
+	if pub := c.certs.Latest(); pub != nil {
+		return pub, nil
+	}
+	if _, err := c.downloadAndCacheCert(ctx, ""); err != nil {
+		return nil, err
+	}
+	if pub := c.certs.Latest(); pub != nil {
+		return pub, nil
+	}
+	return nil, fmt.Errorf("no platform cert cached")
+}
+
 // SignMessage：用商户私钥签名
 func (c *Client) SignMessage(message string) (string, error) {
 	return SignSHA256WithRSA(message, c.privateKey)

@@ -33,8 +33,13 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		alipay.POST("/close", handler.AlipayClose)
 		alipay.POST("/refund", handler.AlipayRefund)
 		alipay.POST("/refund-sync", handler.AlipayRefundSync)
+		alipay.POST("/transfer", handler.AlipayTransfer)
+		alipay.POST("/transfer-sync", handler.AlipayTransferSync)
+		alipay.POST("/alloc", handler.AlipayAlloc)
+		alipay.POST("/alloc-sync", handler.AlipayAllocSync)
 		alipay.POST("/callback/parse-pay", handler.AlipayCallbackParsePay)
 		alipay.POST("/callback/parse-refund", handler.AlipayCallbackParseRefund)
+		alipay.POST("/callback/parse-transfer", handler.AlipayCallbackParseTransfer)
 		alipay.POST("/auth/app-token", handler.AlipayAppAuthToken)
 	}
 
@@ -46,8 +51,13 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		wechat.POST("/close", handler.WechatClose)
 		wechat.POST("/refund", handler.WechatRefund)
 		wechat.POST("/refund-sync", handler.WechatRefundSync)
+		wechat.POST("/transfer", handler.WechatTransfer)
+		wechat.POST("/transfer-sync", handler.WechatTransferSync)
+		wechat.POST("/alloc", handler.WechatAlloc)
+		wechat.POST("/alloc-sync", handler.WechatAllocSync)
 		wechat.POST("/callback/parse-pay", handler.WechatCallbackParsePay)
 		wechat.POST("/callback/parse-refund", handler.WechatCallbackParseRefund)
+		wechat.POST("/callback/parse-transfer", handler.WechatCallbackParseTransfer)
 	}
 
 	// 微信服务商（ISV，无 callback）
@@ -92,8 +102,14 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		douyin.POST("/close", handler.DouyinClose)
 		douyin.POST("/refund", handler.DouyinRefund)
 		douyin.POST("/refund-sync", handler.DouyinRefundSync)
+		douyin.POST("/transfer", handler.DouyinTransfer)
+		douyin.POST("/transfer-sync", handler.DouyinTransferSync)
+		douyin.POST("/alloc", handler.DouyinAlloc)
+		douyin.POST("/alloc-sync", handler.DouyinAllocSync)
 		douyin.POST("/callback/parse-pay", handler.DouyinCallbackParsePay)
 		douyin.POST("/callback/parse-refund", handler.DouyinCallbackParseRefund)
+		douyin.POST("/callback/parse-transfer", handler.DouyinCallbackParseTransfer)
+		douyin.POST("/callback/parse-alloc", handler.DouyinCallbackParseAlloc)
 	}
 
 	return r
