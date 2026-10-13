@@ -78,6 +78,7 @@ func ParseAllocCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.All
 	}
 	var data struct {
 		OrderID         string `json:"order_id"`
+		OutTradeNo      string `json:"out_trade_no"`
 		State           string `json:"state"`
 		SplitFinishTime string `json:"split_finish_time"`
 		Receivers       []struct {
@@ -92,15 +93,18 @@ func ParseAllocCallback(ctx context.Context, req *dto.CallbackParseReq) *dto.All
 	}
 	resp.Verified = true
 	resp.OrderId = data.OrderID
+	// 商户分账单号(平台 allocNo), 供主应用回调按 allocNo 定位分账单(对齐 Java 594c2fd)
+	resp.OutTradeNo = data.OutTradeNo
 	resp.State = data.State
-	resp.SplitFinishTime = data.SplitFinishTime
+	// 完成时间解析为 OffsetDateTime(无时区字面量按东八区), 与主应用镜像字段类型对齐
+	resp.SplitFinishTime = parseDouyinTime(data.SplitFinishTime)
 	// 映射逐明细结果
 	for _, r := range data.Receivers {
 		resp.ReceiverResults = append(resp.ReceiverResults, dto.AllocCallbackReceiverResult{
 			Account:     r.Account,
 			SplitStatus: r.Result,
 			FailReason:  r.FailReason,
-			FinishTime:  r.FinishTime,
+			FinishTime:  parseDouyinTime(r.FinishTime),
 		})
 	}
 	return resp

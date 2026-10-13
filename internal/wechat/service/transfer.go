@@ -152,10 +152,13 @@ func Alloc(ctx context.Context, req *dto.AllocReq) (*dto.AllocResp, error) {
 		receivers = append(receivers, item)
 	}
 	body := map[string]any{
-		"transaction_id":   req.TransactionID,
-		"out_order_no":     req.OutOrderNo,
+		// appid 必传: 接收方类型含 PERSONAL_OPENID 时微信强制校验(openid 是 appid 维度账号),
+		// MERCHANT_ID 类型下多传无害; 网关不会从商户配置自动补(对齐 Java 19d4d4b)
+		"appid":           req.Credential.WxAppId,
+		"transaction_id":  req.TransactionID,
+		"out_order_no":    req.OutOrderNo,
 		"unfreeze_unsplit": true,
-		"receivers":        receivers,
+		"receivers":       receivers,
 	}
 	raw, err := client.Do(ctx, http.MethodPost, profitSharingOrdersPath, body)
 	if err != nil {

@@ -151,6 +151,9 @@ func Alloc(ctx context.Context, req *dto.AllocReq) (*dto.AllocResp, error) {
 			"type":    r.Type,
 			"account": r.Account,
 			"amount":  int64(r.Amount),
+			// 抖音要求每个接收方的分账描述(receivers[].description)必填,
+			// 缺失报 PARAM_ERROR("description is empty", 错误提示的 /description 未标明位于 receivers 内)
+			"description": "订单分账",
 		}
 		if r.Name != "" {
 			encrypted, serial, err := encryptWithPlatformCert(ctx, client, r.Name)
@@ -167,8 +170,10 @@ func Alloc(ctx context.Context, req *dto.AllocReq) (*dto.AllocResp, error) {
 		receivers = append(receivers, item)
 	}
 	body := map[string]any{
-		"appid":            req.Credential.DouyinAppID,
-		"mchid":            req.Credential.MchID,
+		"appid": req.Credential.DouyinAppID,
+		"mchid": req.Credential.MchID,
+		// 抖音线上 API 要求根级 description 必填(官方 SDK 缺该字段, Java 侧经扩展子类补齐)
+		"description":      "订单分账",
 		"transaction_id":   req.TradeNo,
 		"out_order_no":     req.OutTradeNo,
 		"unfreeze_unsplit": true,
@@ -180,8 +185,8 @@ func Alloc(ctx context.Context, req *dto.AllocReq) (*dto.AllocResp, error) {
 
 	raw, err := client.DoWithHeaders(ctx, http.MethodPost, profitSharingCreatePath, body, headers)
 	if err != nil {
-		// 异常不抛, 包 resp 返回 errorCode/errorMsg(对齐 Java 两个字段均填 message)
-		return &dto.AllocResp{ErrorCode: err.Error(), ErrorMsg: err.Error()}, nil
+		// 异常不抛, 包 resp 返回结构化 errorCode/errorMsg(对齐 Java fillError)
+		return allocErrorResp(err), nil
 	}
 	var out struct {
 		OrderID string `json:"order_id"`
@@ -203,8 +208,8 @@ func AllocSync(ctx context.Context, req *dto.AllocReq) (*dto.AllocResp, error) {
 		"&transaction_id=" + url.QueryEscape(req.TradeNo)
 	raw, err := client.Do(ctx, http.MethodGet, path, nil)
 	if err != nil {
-		// 异常不抛, 包 resp 返回 errorCode/errorMsg(对齐 Java 两个字段均填 message)
-		return &dto.AllocResp{ErrorCode: err.Error(), ErrorMsg: err.Error()}, nil
+		// 异常不抛, 包 resp 返回结构化 errorCode/errorMsg(对齐 Java fillError)
+		return allocErrorResp(err), nil
 	}
 	var out struct {
 		OrderID         string `json:"order_id"`
@@ -231,7 +236,8 @@ func AllocSync(ctx context.Context, req *dto.AllocReq) (*dto.AllocResp, error) {
 			Account:     r.Account,
 			SplitStatus: r.Result,
 			FailReason:  r.FailReason,
-			FinishTime:  r.FinishTime,
+			// 明细完成时间解析为 OffsetDateTime(无时区字面量按东八区), 与主应用镜像字段类型对齐
+			FinishTime: parseDouyinTime(r.FinishTime),
 		}
 		if r.Amount != nil {
 			rr.Amount = ptrInt64(*r.Amount)
@@ -239,6 +245,41 @@ func AllocSync(ctx context.Context, req *dto.AllocReq) (*dto.AllocResp, error) {
 		resp.ReceiverSplitResultDtos = append(resp.ReceiverSplitResultDtos, rr)
 	}
 	return resp, nil
+}
+
+// allocErrorResp：分账异常 → 包 resp(对齐 Java fillError/buildErrorMsg 语义)
+//
+// APIError(网关已结构化)取通道错误码 + "message: detail.issue" 简洁文案;
+// 其他异常(签名/网络类)无结构化信息, 退回原始 message; 完整调试串(含请求体)仅留在日志, 不透传给主应用。
+func allocErrorResp(err error) *dto.AllocResp {
+	resp := &dto.AllocResp{}
+	if apiErr, ok := err.(*openapi.APIError); ok {
+		resp.ErrorCode = apiErr.Code
+		resp.ErrorMsg = apiErr.Message
+		if issue := detailIssue(apiErr.Body); issue != "" {
+			resp.ErrorMsg = apiErr.Message + ": " + issue
+		}
+		if resp.ErrorMsg == "" {
+			resp.ErrorMsg = apiErr.Error()
+		}
+		return resp
+	}
+	resp.ErrorCode = err.Error()
+	resp.ErrorMsg = err.Error()
+	return resp
+}
+
+// detailIssue：从网关错误响应体提取 detail.issue(如 "description is empty"), 非预期结构返回空
+func detailIssue(body string) string {
+	var parsed struct {
+		Detail struct {
+			Issue string `json:"issue"`
+		} `json:"detail"`
+	}
+	if json.Unmarshal([]byte(body), &parsed) != nil {
+		return ""
+	}
+	return parsed.Detail.Issue
 }
 
 // encryptWithPlatformCert：平台证书 RSA(PKCS#1 v1.5) 加密敏感字段, 返回密文与证书序列号(十六进制大写)

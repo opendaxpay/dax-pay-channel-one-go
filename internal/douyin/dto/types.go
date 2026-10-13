@@ -126,18 +126,18 @@ type ReportInfo struct {
 //
 // 发起时 amount/openid(或 phoneNumber)/scene 必填; 同步按 outBillNo(通道单号)或 transferNo(平台单号)反查。
 type TransferReq struct {
-	OutBillNo    string                `json:"outBillNo"`
-	TransferNo   string                `json:"transferNo"`
-	Amount       jsonx.Int64String     `json:"amount"`
-	Openid       string                `json:"openid"`
-	PhoneNumber  string                `json:"phoneNumber"`
-	Scene        string                `json:"scene"`
-	UserName     string                `json:"userName"`
-	Remark       string                `json:"remark"`
-	Perception   string                `json:"perception"`
-	ReportInfos  []ReportInfo          `json:"reportInfos"`
-	NotifyURL    string                `json:"notifyUrl"`
-	Credential   *douyin.SdkCredential `json:"credential"`
+	OutBillNo   string                `json:"outBillNo"`
+	TransferNo  string                `json:"transferNo"`
+	Amount      jsonx.Int64String     `json:"amount"`
+	Openid      string                `json:"openid"`
+	PhoneNumber string                `json:"phoneNumber"`
+	Scene       string                `json:"scene"`
+	UserName    string                `json:"userName"`
+	Remark      string                `json:"remark"`
+	Perception  string                `json:"perception"`
+	ReportInfos []ReportInfo          `json:"reportInfos"`
+	NotifyURL   string                `json:"notifyUrl"`
+	Credential  *douyin.SdkCredential `json:"credential"`
 }
 
 // TransferResp：转账响应(对标 DouyinTransferResp)
@@ -157,29 +157,50 @@ type ReceiverInfo struct {
 
 // AllocReq：分账发起/同步共用请求(对标 DouyinAllocReq)
 type AllocReq struct {
-	OutTradeNo        string                `json:"outTradeNo"`
-	TradeNo           string                `json:"tradeNo"`
-	ReceiverInfoDtos  []ReceiverInfo        `json:"receiverInfoDtos"`
-	NotifyURL         string                `json:"notifyUrl"`
-	Credential        *douyin.SdkCredential `json:"credential"`
+	OutTradeNo       string                `json:"outTradeNo"`
+	TradeNo          string                `json:"tradeNo"`
+	ReceiverInfoDtos []ReceiverInfo        `json:"receiverInfoDtos"`
+	NotifyURL        string                `json:"notifyUrl"`
+	Credential       *douyin.SdkCredential `json:"credential"`
 }
 
 // ReceiverSplitResult：分账逐明细结果
 type ReceiverSplitResult struct {
-	Account    string         `json:"account,omitempty"`
-	Amount     *jsonx.Int64String `json:"amount,omitempty"`
-	SplitStatus string        `json:"splitStatus,omitempty"`
-	FailReason string         `json:"failReason,omitempty"`
-	FinishTime string         `json:"finishTime,omitempty"`
+	Account     string                `json:"account,omitempty"`
+	Amount      *jsonx.Int64String    `json:"amount,omitempty"`
+	SplitStatus string                `json:"splitStatus,omitempty"`
+	FailReason  string                `json:"failReason,omitempty"`
+	FinishTime  *jsonx.OffsetDateTime `json:"finishTime,omitempty"`
 }
 
 // AllocResp：分账响应(对标 DouyinAllocResp)
 type AllocResp struct {
-	OrderId                 string                 `json:"orderId,omitempty"`
-	Status                  string                 `json:"status,omitempty"`
-	ReceiverSplitResultDtos []ReceiverSplitResult  `json:"receiverSplitResultDtos,omitempty"`
-	ErrorCode               string                 `json:"errorCode,omitempty"`
-	ErrorMsg                string                 `json:"errorMsg,omitempty"`
+	OrderId                 string                `json:"orderId,omitempty"`
+	Status                  string                `json:"status,omitempty"`
+	ReceiverSplitResultDtos []ReceiverSplitResult `json:"receiverSplitResultDtos,omitempty"`
+	ErrorCode               string                `json:"errorCode,omitempty"`
+	ErrorMsg                string                `json:"errorMsg,omitempty"`
+}
+
+// AllocReceiverReq：分账接收方绑定/解绑共用请求(对标 DouyinAllocReceiverReq)
+//
+// 绑定走 addSplitReceiver, 解绑走 deleteSplitReceiver;
+// receiverName 为敏感字段(绑定时平台证书加密), relationType 为平台小写(转抖音原生大写)。
+type AllocReceiverReq struct {
+	ReceiverType    string                `json:"receiverType"`
+	ReceiverAccount string                `json:"receiverAccount"`
+	ReceiverName    string                `json:"receiverName"`
+	RelationType    string                `json:"relationType"`
+	CustomRelation  string                `json:"customRelation"`
+	Credential      *douyin.SdkCredential `json:"credential"`
+}
+
+// AllocReceiverResp：分账接收方绑定/解绑共用响应(对标 DouyinAllocReceiverResp)
+//
+// 成功无业务数据, 失败时填充 errorCode/errorMsg 由主应用决策。
+type AllocReceiverResp struct {
+	ErrorCode string `json:"errorCode,omitempty"`
+	ErrorMsg  string `json:"errorMsg,omitempty"`
 }
 
 // TransferCallbackParseResp：转账回调解析响应(对标 DouyinTransferCallbackParseResp)
@@ -195,17 +216,18 @@ type TransferCallbackParseResp struct {
 
 // AllocCallbackReceiverResult：分账回调逐明细结果
 type AllocCallbackReceiverResult struct {
-	Account    string `json:"account,omitempty"`
-	SplitStatus string `json:"splitStatus,omitempty"`
-	FailReason string `json:"failReason,omitempty"`
-	FinishTime string `json:"finishTime,omitempty"`
+	Account     string                `json:"account,omitempty"`
+	SplitStatus string                `json:"splitStatus,omitempty"`
+	FailReason  string                `json:"failReason,omitempty"`
+	FinishTime  *jsonx.OffsetDateTime `json:"finishTime,omitempty"`
 }
 
 // AllocCallbackParseResp：分账回调解析响应(对标 DouyinAllocCallbackParseResp)
 type AllocCallbackParseResp struct {
-	Verified          bool                          `json:"verified"`
-	OrderId           string                        `json:"orderId,omitempty"`
-	State             string                        `json:"state,omitempty"`
-	SplitFinishTime   string                        `json:"splitFinishTime,omitempty"`
-	ReceiverResults   []AllocCallbackReceiverResult `json:"receiverResults,omitempty"`
+	Verified        bool                          `json:"verified"`
+	OrderId         string                        `json:"orderId,omitempty"`
+	OutTradeNo      string                        `json:"outTradeNo,omitempty"`
+	State           string                        `json:"state,omitempty"`
+	SplitFinishTime *jsonx.OffsetDateTime         `json:"splitFinishTime,omitempty"`
+	ReceiverResults []AllocCallbackReceiverResult `json:"receiverResults,omitempty"`
 }

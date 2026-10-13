@@ -70,6 +70,26 @@ func formatExpire(t jsonx.OffsetDateTime) string {
 	return cst.Format("2006-01-02T15:04:05") + "+08:00"
 }
 
+// parseDouyinTime：抖音时间字符串(兼容 RFC3339 带偏移与 yyyy-MM-dd HH:mm:ss 东八区字面量) → OffsetDateTime
+//
+// 对齐 Java DouyinDateUtil: 解析失败返回 nil(不中断业务); 禁止对无时区字面量直接按带偏移时间解析(必抛异常)。
+func parseDouyinTime(s string) *jsonx.OffsetDateTime {
+	if s == "" {
+		return nil
+	}
+	// 先按 RFC3339(含 +08:00 偏移)直接解析
+	if parsed, err := time.Parse(time.RFC3339, s); err == nil {
+		odt := jsonx.OffsetDateTime(parsed.UTC())
+		return &odt
+	}
+	// 无时区字面量走东八区兜底
+	if parsed, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.FixedZone("CST", 8*3600)); err == nil {
+		odt := jsonx.OffsetDateTime(parsed.UTC())
+		return &odt
+	}
+	return nil
+}
+
 func ptrInt64(v int64) *jsonx.Int64String {
 	x := jsonx.Int64String(v)
 	return &x
