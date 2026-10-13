@@ -154,6 +154,34 @@ func DouyinAllocSync(c *gin.Context) {
 	writeOK(c, data)
 }
 
+// DouyinAllocReceiverBind：POST /channel/douyin/alloc-receiver/bind
+func DouyinAllocReceiverBind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.BindReceiver(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// DouyinAllocReceiverUnbind：POST /channel/douyin/alloc-receiver/unbind
+func DouyinAllocReceiverUnbind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.UnbindReceiver(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
 // DouyinCallbackParseTransfer：POST /channel/douyin/callback/parse-transfer
 func DouyinCallbackParseTransfer(c *gin.Context) {
 	var req dto.CallbackParseReq

@@ -146,16 +146,16 @@ type ReportInfo struct {
 //
 // 发起时 amount/openid/scene 必填; 同步按 outBillNo(通道单号)或 transferNo(平台单号)反查。
 type TransferReq struct {
-	OutBillNo  string                `json:"outBillNo"`
-	TransferNo string                `json:"transferNo"`
-	Amount     jsonx.Int64String     `json:"amount"`
-	Openid     string                `json:"openid"`
-	Scene      string                `json:"scene"`
-	UserName   string                `json:"userName"`
-	Remark     string                `json:"remark"`
-	NotifyURL  string                `json:"notifyUrl"`
-	ReportInfos []ReportInfo         `json:"reportInfos"`
-	Credential *wechat.SdkCredential `json:"credential"`
+	OutBillNo   string                `json:"outBillNo"`
+	TransferNo  string                `json:"transferNo"`
+	Amount      jsonx.Int64String     `json:"amount"`
+	Openid      string                `json:"openid"`
+	Scene       string                `json:"scene"`
+	UserName    string                `json:"userName"`
+	Remark      string                `json:"remark"`
+	NotifyURL   string                `json:"notifyUrl"`
+	ReportInfos []ReportInfo          `json:"reportInfos"`
+	Credential  *wechat.SdkCredential `json:"credential"`
 }
 
 // TransferResp：转账响应(对标 WechatTransferResp)
@@ -201,6 +201,27 @@ type AllocResp struct {
 	Receivers     []ReceiverResult `json:"receivers,omitempty"`
 	ErrorCode     string           `json:"errorCode,omitempty"`
 	ErrorMsg      string           `json:"errorMsg,omitempty"`
+}
+
+// AllocReceiverReq：分账接收方绑定/解绑共用请求(对标 WechatAllocReceiverReq)
+//
+// 对应微信 V3 API: 绑定 profitsharing/receivers/add / 解绑 profitsharing/receivers/delete。
+// 直连与服务商身份由 credential 区分(服务商凭证含 subMchId/subAppId)。
+type AllocReceiverReq struct {
+	ReceiverType    string                `json:"receiverType"`
+	ReceiverAccount string                `json:"receiverAccount"`
+	ReceiverName    string                `json:"receiverName"`
+	RelationType    string                `json:"relationType"`
+	CustomRelation  string                `json:"customRelation"`
+	Credential      *wechat.SdkCredential `json:"credential"`
+}
+
+// AllocReceiverResp：分账接收方绑定/解绑共用响应(对标 WechatAllocReceiverResp)
+//
+// 成功无业务数据, 失败时填充错误码与错误信息由主应用决策。
+type AllocReceiverResp struct {
+	ErrorCode string `json:"errorCode,omitempty"`
+	ErrorMsg  string `json:"errorMsg,omitempty"`
 }
 
 // TransferCallbackParseResp：转账回调解析响应(对标 WechatTransferCallbackParseResp)

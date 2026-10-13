@@ -203,3 +203,31 @@ func AlipayCallbackParseTransfer(c *gin.Context) {
 	}
 	writeOK(c, service.ParseTransferCallback(c.Request.Context(), &req))
 }
+
+// AlipayAllocReceiverBind：POST /channel/alipay/alloc-receiver/bind
+func AlipayAllocReceiverBind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.BindReceiver(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// AlipayAllocReceiverUnbind：POST /channel/alipay/alloc-receiver/unbind
+func AlipayAllocReceiverUnbind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.UnbindReceiver(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}

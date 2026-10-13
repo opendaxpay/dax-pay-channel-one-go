@@ -201,11 +201,11 @@ type RoyaltyParam struct {
 
 // AllocReq：分账发起/同步共用请求(对标 AlipayAllocReq)
 type AllocReq struct {
-	OutRequestNo     string                `json:"outRequestNo"`
-	TradeNo          string                `json:"tradeNo"`
-	RoyaltyMode      string                `json:"royaltyMode"`
-	RoyaltyParameters []RoyaltyParam       `json:"royaltyParameters"`
-	Credential       *alipay.SdkCredential `json:"credential"`
+	OutRequestNo      string                `json:"outRequestNo"`
+	TradeNo           string                `json:"tradeNo"`
+	RoyaltyMode       string                `json:"royaltyMode"`
+	RoyaltyParameters []RoyaltyParam        `json:"royaltyParameters"`
+	Credential        *alipay.SdkCredential `json:"credential"`
 }
 
 // RoyaltyDetailResult：分账逐明细结果
@@ -224,6 +224,25 @@ type AllocResp struct {
 	Code              string                `json:"code,omitempty"`
 	SubCode           string                `json:"subCode,omitempty"`
 	SubMsg            string                `json:"subMsg,omitempty"`
+}
+
+// AllocReceiverReq：分账接收方绑定/解绑共用请求(对标 AlipayAllocReceiverReq)
+//
+// 对应支付宝 API: 绑定 alipay.trade.royalty.relation.bind / 解绑 alipay.trade.royalty.relation.unbind
+type AllocReceiverReq struct {
+	OutRequestNo    string                `json:"outRequestNo"`
+	ReceiverType    string                `json:"receiverType"`
+	ReceiverAccount string                `json:"receiverAccount"`
+	ReceiverName    string                `json:"receiverName"`
+	Credential      *alipay.SdkCredential `json:"credential"`
+}
+
+// AllocReceiverResp：分账接收方绑定/解绑共用响应(对标 AlipayAllocReceiverResp)
+//
+// 成功无业务数据; 失败时填充错误码(支付宝 subCode)与错误信息(支付宝 subMsg)
+type AllocReceiverResp struct {
+	ErrorCode string `json:"errorCode,omitempty"`
+	ErrorMsg  string `json:"errorMsg,omitempty"`
 }
 
 // TransferCallbackParseResp：转账回调解析响应(对标 AlipayTransferCallbackParseResp)

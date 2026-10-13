@@ -37,6 +37,8 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		alipay.POST("/transfer-sync", handler.AlipayTransferSync)
 		alipay.POST("/alloc", handler.AlipayAlloc)
 		alipay.POST("/alloc-sync", handler.AlipayAllocSync)
+		alipay.POST("/alloc-receiver/bind", handler.AlipayAllocReceiverBind)
+		alipay.POST("/alloc-receiver/unbind", handler.AlipayAllocReceiverUnbind)
 		alipay.POST("/callback/parse-pay", handler.AlipayCallbackParsePay)
 		alipay.POST("/callback/parse-refund", handler.AlipayCallbackParseRefund)
 		alipay.POST("/callback/parse-transfer", handler.AlipayCallbackParseTransfer)
@@ -55,6 +57,8 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		wechat.POST("/transfer-sync", handler.WechatTransferSync)
 		wechat.POST("/alloc", handler.WechatAlloc)
 		wechat.POST("/alloc-sync", handler.WechatAllocSync)
+		wechat.POST("/alloc-receiver/bind", handler.WechatAllocReceiverBind)
+		wechat.POST("/alloc-receiver/unbind", handler.WechatAllocReceiverUnbind)
 		wechat.POST("/callback/parse-pay", handler.WechatCallbackParsePay)
 		wechat.POST("/callback/parse-refund", handler.WechatCallbackParseRefund)
 		wechat.POST("/callback/parse-transfer", handler.WechatCallbackParseTransfer)
@@ -68,6 +72,8 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		wechatIsv.POST("/close", handler.WechatIsvClose)
 		wechatIsv.POST("/refund", handler.WechatIsvRefund)
 		wechatIsv.POST("/refund-sync", handler.WechatIsvRefundSync)
+		wechatIsv.POST("/alloc-receiver/bind", handler.WechatIsvAllocReceiverBind)
+		wechatIsv.POST("/alloc-receiver/unbind", handler.WechatIsvAllocReceiverUnbind)
 	}
 
 	// 银联商务 UMS
@@ -106,6 +112,8 @@ func NewRouter(encryptor *transport.Encryptor) *gin.Engine {
 		douyin.POST("/transfer-sync", handler.DouyinTransferSync)
 		douyin.POST("/alloc", handler.DouyinAlloc)
 		douyin.POST("/alloc-sync", handler.DouyinAllocSync)
+		douyin.POST("/alloc-receiver/bind", handler.DouyinAllocReceiverBind)
+		douyin.POST("/alloc-receiver/unbind", handler.DouyinAllocReceiverUnbind)
 		douyin.POST("/callback/parse-pay", handler.DouyinCallbackParsePay)
 		douyin.POST("/callback/parse-refund", handler.DouyinCallbackParseRefund)
 		douyin.POST("/callback/parse-transfer", handler.DouyinCallbackParseTransfer)

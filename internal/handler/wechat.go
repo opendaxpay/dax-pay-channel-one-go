@@ -232,3 +232,59 @@ func WechatIsvRefundSync(c *gin.Context) {
 	}
 	writeOK(c, data)
 }
+
+// WechatAllocReceiverBind：POST /channel/wechat/alloc-receiver/bind
+func WechatAllocReceiverBind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.DirectAllocReceiverBind(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// WechatAllocReceiverUnbind：POST /channel/wechat/alloc-receiver/unbind
+func WechatAllocReceiverUnbind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.DirectAllocReceiverUnbind(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// WechatIsvAllocReceiverBind：POST /channel/wechat/isv/alloc-receiver/bind
+func WechatIsvAllocReceiverBind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.IsvAllocReceiverBind(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
+
+// WechatIsvAllocReceiverUnbind：POST /channel/wechat/isv/alloc-receiver/unbind
+func WechatIsvAllocReceiverUnbind(c *gin.Context) {
+	var req dto.AllocReceiverReq
+	if !middleware.BindJSON(c, &req) {
+		return
+	}
+	data, err := service.IsvAllocReceiverUnbind(c.Request.Context(), &req)
+	if err != nil {
+		writeErr(c, err)
+		return
+	}
+	writeOK(c, data)
+}
